@@ -15,7 +15,7 @@
   --card-bg: #111111; /* Slightly lighter for visibility */
   --card-border: #222222; /* More prominent border */
   --accent: #ffffff;
-  --muted: #888888; /* Brighter muted text */
+  --muted: #a1a1aa; /* Much brighter zinc-400 equivalent */
 }
 
 @theme inline {

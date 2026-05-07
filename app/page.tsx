@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { UserButton, useUser } from "@clerk/nextjs"
+import { UserButton, useUser, SignInButton } from "@clerk/nextjs"
 import { supabase } from '@/utils/supabase'
 import ThemeToggle from "@/app/components/ThemeToggle"
 import ElectricityDashboard from "@/app/components/ElectricityDashboard"
 import LogElectricity from "@/app/components/LogElectricity"
 import ApplianceBreakdown from "@/app/components/ApplianceBreakdown"
+import LandingPage from "@/app/components/LandingPage"
 import { TrendingUp, PieChart as PieIcon, ArrowUpRight, Bell, RefreshCw, FileText, Download, LayoutGrid, Settings, ArrowRight, Trash2, Clock, Zap } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, parseISO, isBefore } from 'date-fns'
 import jsPDF from 'jspdf'
@@ -107,6 +108,20 @@ export default function Home() {
   }
 
   const electricityBills = bills.filter(b => b.category === 'Electricity')
+
+  const { isLoaded, isSignedIn } = useUser()
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
+
+  if (!isSignedIn) {
+    return <LandingPage />
+  }
 
   return (
     <main className="min-h-screen bg-background text-foreground pb-20 transition-colors">
