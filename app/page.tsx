@@ -195,7 +195,7 @@ export default function Home() {
     // Branded Header
     doc.setFontSize(22)
     doc.setFont('helvetica', 'bold')
-    doc.text('ANTIGRAVITY BILLS', 14, 20)
+    doc.text('BILL TRACKER', 14, 20)
     
     doc.setFontSize(10)
     doc.setFont('helvetica', 'normal')
@@ -227,7 +227,7 @@ export default function Home() {
       styles: { fontSize: 9 },
     })
 
-    doc.save(`Antigravity_Bills_${format(new Date(), 'yyyy-MM-dd')}.pdf`)
+    doc.save(`Bill_Tracker_Report_${format(new Date(), 'yyyy-MM-dd')}.pdf`)
   }
 
   const exportToCSV = () => {
@@ -279,7 +279,7 @@ export default function Home() {
             <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
               <div className="w-4 h-4 border-2 border-background rounded-sm rotate-45"></div>
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground">Antigravity Bills</h1>
+            <h1 className="text-xl font-bold tracking-tight text-foreground">Bill tracker</h1>
           </div>
           <div className="flex items-center gap-4">
             <button 
