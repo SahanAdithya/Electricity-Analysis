@@ -6,7 +6,8 @@ import AddBill from "@/app/components/AddBill"
 import EditBillModal from "@/app/components/EditBillModal"
 import SpendingChart from "@/app/components/SpendingChart"
 import CategoryBreakdown from "@/app/components/CategoryBreakdown"
-import { Trash2, Edit2, CheckCircle, Clock, Wallet, TrendingUp, PieChart as PieIcon, ArrowUpRight, CreditCard, Bell, AlertCircle, Calendar } from 'lucide-react'
+import BillCalendar from "@/app/components/BillCalendar"
+import { Trash2, Edit2, CheckCircle, Clock, Wallet, TrendingUp, PieChart as PieIcon, ArrowUpRight, CreditCard, Bell, AlertCircle, Calendar, RefreshCw } from 'lucide-react'
 import { isBefore, startOfToday, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
 
 interface Bill {
@@ -25,6 +26,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [editingBill, setEditingBill] = useState<Bill | null>(null)
   const [reminding, setReminding] = useState(false)
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
 
   const fetchBills = useCallback(async () => {
     if (!user) return
@@ -44,7 +46,6 @@ export default function Home() {
     setLoading(false)
   }, [user])
 
-  // Recurring Bill Logic: Check if recurring bills for this month have been created
   const checkAndCreateRecurringBills = useCallback(async (currentBills: Bill[]) => {
     if (!user || currentBills.length === 0) return
 
@@ -54,7 +55,6 @@ export default function Home() {
     const monthEnd = endOfMonth(now)
 
     for (const bill of recurringBills) {
-      // Check if there's already an entry for this recurring bill in the current month
       const alreadyExists = currentBills.find(b => 
         b.name === bill.name && 
         b.is_recurring && 
@@ -63,7 +63,6 @@ export default function Home() {
       )
 
       if (!alreadyExists) {
-        // Create new bill for this month
         const newDueDate = new Date(bill.due_date)
         newDueDate.setMonth(now.getMonth())
         newDueDate.setFullYear(now.getFullYear())
@@ -79,7 +78,6 @@ export default function Home() {
         })
       }
     }
-    // No need to re-fetch here if we want to avoid loops, but we should probably fetch once done
   }, [user])
 
   useEffect(() => {
@@ -225,12 +223,33 @@ export default function Home() {
           <AddBill onBillAdded={fetchBills} />
         </section>
 
-        {/* Bill List */}
+        {/* Bill List / Calendar View */}
         <section>
-          <div className="flex justify-between items-end mb-6">
-            <h2 className="text-2xl font-bold tracking-tight">Active Bills</h2>
-            <div className="text-sm font-semibold text-gray-400 uppercase tracking-widest">
-              Total Outstanding: ${totalOutstanding.toFixed(2)}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Manage Your Bills</h2>
+              <div className="text-sm font-semibold text-gray-400 uppercase tracking-widest mt-1">
+                Total Outstanding: ${totalOutstanding.toFixed(2)}
+              </div>
+            </div>
+
+            <div className="bg-gray-100 p-1 rounded-2xl flex gap-1">
+              <button 
+                onClick={() => setViewMode('list')}
+                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                  viewMode === 'list' ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                List View
+              </button>
+              <button 
+                onClick={() => setViewMode('calendar')}
+                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                  viewMode === 'calendar' ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                Calendar
+              </button>
             </div>
           </div>
           
@@ -240,101 +259,105 @@ export default function Home() {
                 <div key={i} className="h-48 bg-gray-100 animate-pulse rounded-3xl border border-gray-200"></div>
               ))}
             </div>
-          ) : bills.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {bills.map((bill) => {
-                const isOverdue = bill.status === 'unpaid' && isBefore(parseISO(bill.due_date), startOfToday())
-                
-                return (
-                  <div 
-                    key={bill.id} 
-                    className={`group relative p-6 bg-white rounded-3xl shadow-sm border transition-all hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between h-full ${
-                      isOverdue 
-                        ? 'border-red-100 bg-red-50/10' 
-                        : 'border-gray-100'
-                    } ${bill.status === 'paid' ? 'opacity-70 grayscale-[0.5]' : ''}`}
-                  >
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
-                            {bill.category || 'Other'}
-                          </span>
-                          {bill.is_recurring && (
-                            <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 flex items-center gap-1">
-                              <RefreshCw size={8} /> Recurring
+          ) : viewMode === 'list' ? (
+            bills.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {bills.map((bill) => {
+                  const isOverdue = bill.status === 'unpaid' && isBefore(parseISO(bill.due_date), startOfToday())
+                  
+                  return (
+                    <div 
+                      key={bill.id} 
+                      className={`group relative p-6 bg-white rounded-3xl shadow-sm border transition-all hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between h-full ${
+                        isOverdue 
+                          ? 'border-red-100 bg-red-50/10' 
+                          : 'border-gray-100'
+                      } ${bill.status === 'paid' ? 'opacity-70 grayscale-[0.5]' : ''}`}
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                              {bill.category || 'Other'}
                             </span>
-                          )}
+                            {bill.is_recurring && (
+                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 flex items-center gap-1">
+                                <RefreshCw size={8} /> Recurring
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-900 leading-tight">{bill.name}</h3>
+                          <div className={`flex items-center gap-1.5 mt-1 ${isOverdue ? 'text-red-500 animate-pulse' : 'text-gray-400'}`}>
+                            {isOverdue ? <AlertCircle size={12} /> : <Clock size={12} />}
+                            <span className="text-[10px] font-black uppercase tracking-wider">
+                              {isOverdue ? 'OVERDUE: ' : 'Due: '}
+                              {new Date(bill.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                            </span>
+                          </div>
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 leading-tight">{bill.name}</h3>
-                        <div className={`flex items-center gap-1.5 mt-1 ${isOverdue ? 'text-red-500 animate-pulse' : 'text-gray-400'}`}>
-                          {isOverdue ? <AlertCircle size={12} /> : <Clock size={12} />}
-                          <span className="text-[10px] font-black uppercase tracking-wider">
-                            {isOverdue ? 'OVERDUE: ' : 'Due: '}
-                            {new Date(bill.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                          </span>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                          <button 
+                            onClick={() => setEditingBill(bill)}
+                            className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-black transition-colors"
+                            title="Edit Bill"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(bill.id)}
+                            className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-600 transition-colors"
+                            title="Delete Bill"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                        <button 
-                          onClick={() => setEditingBill(bill)}
-                          className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-black transition-colors"
-                          title="Edit Bill"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(bill.id)}
-                          className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-600 transition-colors"
-                          title="Delete Bill"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
 
-                    <div className="mt-8 flex justify-between items-end">
-                      <div>
-                        <p className={`text-3xl font-black leading-none tracking-tighter ${isOverdue ? 'text-red-600' : 'text-gray-900'}`}>
-                          ${bill.amount.toFixed(2)}
-                        </p>
-                        <div className={`mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                          bill.status === 'paid' 
-                            ? 'bg-green-50 text-green-600 border border-green-100' 
-                            : isOverdue
-                              ? 'bg-red-50 text-red-600 border border-red-100'
-                              : 'bg-orange-50 text-orange-600 border border-orange-100'
-                        }`}>
-                          {bill.status === 'paid' ? <CheckCircle size={10} /> : <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isOverdue ? 'bg-red-500' : 'bg-orange-500'}`}></div>}
-                          {isOverdue ? 'Overdue' : bill.status}
+                      <div className="mt-8 flex justify-between items-end">
+                        <div>
+                          <p className={`text-3xl font-black leading-none tracking-tighter ${isOverdue ? 'text-red-600' : 'text-gray-900'}`}>
+                            ${bill.amount.toFixed(2)}
+                          </p>
+                          <div className={`mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                            bill.status === 'paid' 
+                              ? 'bg-green-50 text-green-600 border border-green-100' 
+                              : isOverdue
+                                ? 'bg-red-50 text-red-600 border border-red-100'
+                                : 'bg-orange-50 text-orange-600 border border-orange-100'
+                          }`}>
+                            {bill.status === 'paid' ? <CheckCircle size={10} /> : <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isOverdue ? 'bg-red-500' : 'bg-orange-500'}`}></div>}
+                            {isOverdue ? 'Overdue' : bill.status}
+                          </div>
                         </div>
+                        
+                        {bill.status === 'unpaid' && (
+                          <button 
+                            onClick={() => handleMarkAsPaid(bill.id)}
+                            className={`px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg ${
+                              isOverdue 
+                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200' 
+                                : 'bg-black hover:bg-gray-800 text-white shadow-black/10'
+                            }`}
+                          >
+                            Paid
+                          </button>
+                        )}
                       </div>
-                      
-                      {bill.status === 'unpaid' && (
-                        <button 
-                          onClick={() => handleMarkAsPaid(bill.id)}
-                          className={`px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg ${
-                            isOverdue 
-                              ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200' 
-                              : 'bg-black hover:bg-gray-800 text-white shadow-black/10'
-                          }`}
-                        >
-                          Paid
-                        </button>
-                      )}
                     </div>
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[40px] border-2 border-dashed border-gray-100">
-              <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mb-6">
-                <Wallet className="text-gray-200" size={40} />
+                  )
+                })}
               </div>
-              <p className="text-gray-400 font-bold tracking-tight text-lg">Your dashboard is empty.</p>
-              <p className="text-gray-300 text-sm mt-1">Add your first bill to see the analytics magic.</p>
-            </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[40px] border-2 border-dashed border-gray-100">
+                <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mb-6">
+                  <Wallet className="text-gray-200" size={40} />
+                </div>
+                <p className="text-gray-400 font-bold tracking-tight text-lg">Your dashboard is empty.</p>
+                <p className="text-gray-300 text-sm mt-1">Add your first bill to see the analytics magic.</p>
+              </div>
+            )
+          ) : (
+            <BillCalendar bills={bills} onMarkAsPaid={handleMarkAsPaid} />
           )}
         </section>
       </div>
