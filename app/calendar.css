@@ -1,0 +1,91 @@
+/* Custom styles for react-calendar to match Antigravity aesthetic */
+.react-calendar {
+  width: 100% !important;
+  border: none !important;
+  background: white !important;
+  font-family: inherit !important;
+  line-height: 1.125em !important;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  height: 44px;
+  margin-bottom: 24px;
+}
+
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  font-weight: 800;
+  font-size: 16px;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #f3f4f6;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+  margin-bottom: 12px;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 12px;
+}
+
+.react-calendar__month-view__days__day {
+  padding: 16px !important;
+  background: none;
+  font-weight: 600;
+  font-size: 14px;
+  color: #000;
+  border-radius: 16px;
+  transition: all 0.2s;
+  height: 80px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #d1d5db !important;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #f9fafb !important;
+}
+
+.react-calendar__tile--active {
+  background: #000 !important;
+  color: white !important;
+}
+
+.react-calendar__tile--now {
+  background: #f3f4f6 !important;
+  font-weight: 800;
+}
+
+/* Indicators */
+.bill-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 6px;
+}
+
+.indicator-pending { background-color: #f97316; }
+.indicator-paid { background-color: #22c55e; }
+.indicator-overdue { background-color: #ef4444; }
