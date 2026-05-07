@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Add some bills first so I can analyze them!" })
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
 
     const prompt = `Analyze these household bills and provide 2-3 short, actionable financial insights. 
     Look for trends, high spenders, or upcoming crunches. 
