@@ -2,11 +2,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { UserButton, useUser } from "@clerk/nextjs"
 import { supabase } from '@/utils/supabase'
-import SpendingChart from "@/app/components/SpendingChart"
-import CategoryBreakdown from "@/app/components/CategoryBreakdown"
 import ThemeToggle from "@/app/components/ThemeToggle"
 import ElectricityDashboard from "@/app/components/ElectricityDashboard"
-import { TrendingUp, PieChart as PieIcon, ArrowUpRight, Bell, RefreshCw, FileText, Download, LayoutGrid, Settings, ArrowRight } from 'lucide-react'
+import LogElectricity from "@/app/components/LogElectricity"
+import { TrendingUp, PieChart as PieIcon, ArrowUpRight, Bell, RefreshCw, FileText, Download, LayoutGrid, Settings, ArrowRight, Trash2, Clock, Zap } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, parseISO, isBefore } from 'date-fns'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -27,8 +26,6 @@ export default function Home() {
   const { user } = useUser()
   const [bills, setBills] = useState<Bill[]>([])
   const [loading, setLoading] = useState(true)
-  const [budget, setBudget] = useState<number>(2000)
-  const [reminding, setReminding] = useState(false)
 
   const fetchBills = useCallback(async () => {
     if (!user) return
@@ -43,28 +40,14 @@ export default function Home() {
     setLoading(false)
   }, [user])
 
-  const fetchUserSettings = useCallback(async () => {
-    if (!user) return
-    const { data, error } = await supabase
-      .from('user_settings')
-      .select('monthly_budget')
-      .eq('user_id', user.id)
-      .single()
-
-    if (!error && data) {
-      setBudget(data.monthly_budget)
-    }
-  }, [user])
-
   useEffect(() => {
     fetchBills()
-    fetchUserSettings()
-  }, [fetchBills, fetchUserSettings])
+  }, [fetchBills])
 
-  const updateBudget = async (newBudget: number) => {
-    if (!user) return
-    setBudget(newBudget)
-    await supabase.from('user_settings').update({ monthly_budget: newBudget }).eq('user_id', user.id)
+  const handleDeleteReading = async (id: string) => {
+    if (!confirm("Delete this reading?")) return
+    await supabase.from('bills').delete().eq('id', id)
+    fetchBills()
   }
 
   const exportToPDF = () => {
@@ -82,7 +65,7 @@ export default function Home() {
     autoTable(doc, {
       startY: 50,
       head: [['Bill Name', 'Category', 'Amount', 'Usage (kWh)', 'Date']],
-      body: bills.map(b => [b.name, b.category || 'Other', `$${b.amount.toFixed(2)}`, b.units_consumed || '-', b.due_date]),
+      body: bills.filter(b => b.category === 'Electricity').map(b => [b.name, b.category || 'Other', `$${b.amount.toFixed(2)}`, b.units_consumed || '-', b.due_date]),
       headStyles: { fillColor: [0, 0, 0] },
     })
 
@@ -90,8 +73,9 @@ export default function Home() {
   }
 
   const exportToCSV = () => {
+    const electricityBills = bills.filter(b => b.category === 'Electricity')
     const csvContent = "data:text/csv;charset=utf-8," 
-      + ["Name,Amount,Category,kWh,Date", ...bills.map(b => `${b.name},${b.amount},${b.category},${b.units_consumed || 0},${b.due_date}`)].join("\n")
+      + ["Name,Amount,kWh,Date", ...electricityBills.map(b => `${b.name},${b.amount},${b.units_consumed || 0},${b.due_date}`)].join("\n")
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement("a")
     link.setAttribute("href", encodedUri)
@@ -100,15 +84,7 @@ export default function Home() {
     link.click()
   }
 
-  const thisMonthBills = bills.filter(b => {
-    const d = new Date(b.due_date)
-    const now = new Date()
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
-  })
-  const totalDueThisMonth = thisMonthBills.reduce((acc, b) => acc + b.amount, 0)
-  const remainingBudget = Math.max(0, budget - totalDueThisMonth)
-  const budgetProgress = Math.min(100, (totalDueThisMonth / budget) * 100)
-  const predictedNextMonth = bills.filter(b => b.is_recurring).reduce((acc, b) => acc + b.amount, 0)
+  const electricityBills = bills.filter(b => b.category === 'Electricity')
 
   return (
     <main className="min-h-screen bg-background text-foreground pb-20 transition-colors">
@@ -121,12 +97,6 @@ export default function Home() {
             <h1 className="text-xl font-bold tracking-tight text-foreground">Electricity Analyst</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Link 
-              href="/manage"
-              className="flex items-center gap-2 px-4 py-2 bg-accent text-background rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-lg shadow-accent/20"
-            >
-              <Settings size={14} /> Manage Bills
-            </Link>
             <ThemeToggle />
             <UserButton afterSignOutUrl="/"/>
           </div>
@@ -136,17 +106,91 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-6 py-12 space-y-20">
         {/* Main Hero: Electricity Analytics */}
         <section>
-          <div className="flex justify-between items-end mb-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
             <div>
               <h2 className="text-4xl font-black mb-2 tracking-tight text-foreground">Electricity Analysis</h2>
-              <p className="text-sm font-bold text-muted uppercase tracking-widest">Main Dashboard</p>
+              <p className="text-sm font-bold text-muted uppercase tracking-widest">Energy Intelligence Hub</p>
             </div>
-            <div className="flex gap-3">
-              <button onClick={exportToPDF} className="p-3 bg-card border border-border rounded-xl text-muted hover:text-foreground transition-all"><FileText size={18} /></button>
-              <button onClick={exportToCSV} className="p-3 bg-card border border-border rounded-xl text-muted hover:text-foreground transition-all"><Download size={18} /></button>
+            <div className="flex flex-wrap gap-4">
+              <LogElectricity onLogged={fetchBills} />
+              <div className="flex gap-2">
+                <button onClick={exportToPDF} title="Export PDF" className="p-4 bg-card border border-border rounded-2xl text-muted hover:text-foreground transition-all shadow-sm"><FileText size={20} /></button>
+                <button onClick={exportToCSV} title="Export CSV" className="p-4 bg-card border border-border rounded-2xl text-muted hover:text-foreground transition-all shadow-sm"><Download size={20} /></button>
+                <Link 
+                  href="/manage"
+                  title="Full Bill Management"
+                  className="flex items-center gap-2 px-6 py-4 bg-muted/5 border border-border text-muted rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/10 transition-all"
+                >
+                  <Settings size={16} /> Manage Bills
+                </Link>
+              </div>
             </div>
           </div>
           <ElectricityDashboard bills={bills} />
+        </section>
+
+        <hr className="border-border opacity-50" />
+
+        {/* Recent Readings Table */}
+        <section className="space-y-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-3xl font-black tracking-tight text-foreground">Recent Readings</h2>
+              <p className="text-xs font-bold text-muted uppercase tracking-widest mt-1">Logged electricity data history</p>
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-[40px] overflow-hidden shadow-sm">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-border bg-muted/5">
+                  <th className="px-8 py-6 text-[10px] font-black text-muted uppercase tracking-widest">Date</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-muted uppercase tracking-widest">Usage (kWh)</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-muted uppercase tracking-widest">Amount</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-muted uppercase tracking-widest text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {electricityBills.length > 0 ? (
+                  electricityBills.slice().reverse().map((b) => (
+                    <tr key={b.id} className="hover:bg-muted/5 transition-colors group">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-accent/10 text-accent rounded-lg flex items-center justify-center">
+                            <Clock size={14} />
+                          </div>
+                          <span className="text-sm font-bold text-foreground">
+                            {format(parseISO(b.due_date), 'MMMM dd, yyyy')}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-2">
+                          <Zap size={14} className="text-accent" />
+                          <span className="text-sm font-black text-foreground">{b.units_consumed || 0} kWh</span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6 text-sm font-bold text-muted">${b.amount.toFixed(2)}</td>
+                      <td className="px-8 py-6 text-right">
+                        <button 
+                          onClick={() => handleDeleteReading(b.id)}
+                          className="p-2 text-muted hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-8 py-20 text-center text-muted font-bold tracking-tight">
+                      No electricity readings logged yet. Use the button above to log your first one!
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </main>
