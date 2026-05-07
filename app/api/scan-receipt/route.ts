@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing image data' }, { status: 400 })
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision' })
 
     const prompt = "Analyze this receipt or bill. Extract the merchant/bill name, the total amount, and the due date. Return ONLY a JSON object with these keys: name, amount (number), date (YYYY-MM-DD format). If date is not found, use today's date."
 
