@@ -248,10 +248,14 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-accent/10 blur-[120px] rounded-full -z-10"></div>
         <div className="max-w-3xl mx-auto px-6 space-y-12">
           <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">Ready to optimize your footprint?</h2>
-          <Link href="/sign-up" className="px-12 py-6 bg-white text-black rounded-3xl font-black uppercase tracking-widest hover:bg-green-500 hover:text-white transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)] hover:shadow-green-500/20">
+          <Link href="/sign-up" className="px-12 py-6 bg-white text-black rounded-3xl font-black uppercase tracking-widest hover:bg-green-500 hover:text-white transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)] hover:shadow-green-500/20 inline-block">
             Create Free Account
           </Link>
-          <p className="text-zinc-500 text-xs font-black uppercase tracking-widest">No credit card required • Join the energy revolution</p>
+          <div className="pt-10">
+            <p className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.2em]">
+              No credit card required • Join the energy revolution
+            </p>
+          </div>
         </div>
       </section>
 
