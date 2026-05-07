@@ -3,12 +3,15 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/utils/supabase'
 import { X } from 'lucide-react'
 
+const CATEGORIES = ['Rent', 'Utilities', 'Subscriptions', 'Food', 'Transport', 'Other']
+
 interface Bill {
   id: string
   name: string
   amount: number
   due_date: string
   status: string
+  category?: string
 }
 
 interface EditBillModalProps {
@@ -22,12 +25,14 @@ export default function EditBillModal({ bill, isOpen, onClose, onBillUpdated }: 
   const [name, setName] = useState(bill.name)
   const [amount, setAmount] = useState(bill.amount.toString())
   const [date, setDate] = useState(bill.due_date)
+  const [category, setCategory] = useState(bill.category || 'Other')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     setName(bill.name)
     setAmount(bill.amount.toString())
     setDate(bill.due_date)
+    setCategory(bill.category || 'Other')
   }, [bill])
 
   if (!isOpen) return null
@@ -41,7 +46,8 @@ export default function EditBillModal({ bill, isOpen, onClose, onBillUpdated }: 
       .update({
         name,
         amount: parseFloat(amount),
-        due_date: date
+        due_date: date,
+        category
       })
       .eq('id', bill.id)
 
@@ -79,6 +85,19 @@ export default function EditBillModal({ bill, isOpen, onClose, onBillUpdated }: 
               className="w-full border-gray-200 border p-3 rounded-xl text-black focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none"
               placeholder="e.g. Electricity"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select 
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full border-gray-200 border p-3 rounded-xl text-black focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none"
+            >
+              {CATEGORIES.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
 
           <div>
