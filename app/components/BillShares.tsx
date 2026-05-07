@@ -70,26 +70,26 @@ export default function BillShares({ billId }: BillSharesProps) {
   if (shares.length === 0) return null
 
   return (
-    <div className="mt-4 pt-4 border-t border-gray-100">
+    <div className="mt-4 pt-4 border-t border-border">
       <div className="flex items-center gap-2 mb-3">
-        <Users size={12} className="text-gray-400" />
-        <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Roommate Split</h4>
+        <Users size={12} className="text-muted" />
+        <h4 className="text-[10px] font-black uppercase tracking-widest text-muted">Roommate Split</h4>
       </div>
       <div className="space-y-2">
         {shares.map(share => (
-          <div key={share.id} className="flex justify-between items-center bg-gray-50/50 p-2 rounded-xl border border-gray-100">
+          <div key={share.id} className="flex justify-between items-center bg-muted/5 p-2 rounded-xl border border-border">
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => toggleShareStatus(share.id, share.status)}
-                className={`transition-colors ${share.status === 'paid' ? 'text-green-500' : 'text-gray-300 hover:text-gray-400'}`}
+                className={`transition-colors ${share.status === 'paid' ? 'text-green-500' : 'text-muted hover:text-foreground'}`}
               >
                 {share.status === 'paid' ? <CheckCircle size={14} /> : <Circle size={14} />}
               </button>
-              <span className={`text-[11px] font-bold ${share.status === 'paid' ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+              <span className={`text-[11px] font-bold ${share.status === 'paid' ? 'text-muted line-through' : 'text-foreground'}`}>
                 {share.person_name}
               </span>
             </div>
-            <span className={`text-[11px] font-black ${share.status === 'paid' ? 'text-gray-400' : 'text-gray-900'}`}>
+            <span className={`text-[11px] font-black ${share.status === 'paid' ? 'text-muted' : 'text-foreground'}`}>
               ${share.amount.toFixed(2)}
             </span>
           </div>

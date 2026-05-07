@@ -3,24 +3,43 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-bg: #ffffff;
+  --card-border: #f3f4f6;
+  --accent: #000000;
+  --muted: #9ca3af;
+}
+
+.dark {
+  --background: #000000; /* OLED Black */
+  --foreground: #ffffff;
+  --card-bg: #111111; /* Slightly lighter for visibility */
+  --card-border: #222222; /* More prominent border */
+  --accent: #ffffff;
+  --muted: #888888; /* Brighter muted text */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-card: var(--card-bg);
+  --color-border: var(--card-border);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom Utilities for OLED Mode */
+.dark .glass {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .neon-border {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
 }

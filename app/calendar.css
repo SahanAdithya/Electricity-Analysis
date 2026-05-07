@@ -1,8 +1,8 @@
-/* Custom styles for react-calendar to match Antigravity aesthetic */
+/* Custom styles for react-calendar to match Antigravity aesthetic with dark mode support */
 .react-calendar {
   width: 100% !important;
   border: none !important;
-  background: white !important;
+  background: transparent !important;
   font-family: inherit !important;
   line-height: 1.125em !important;
 }
@@ -17,8 +17,8 @@
   min-width: 44px;
   background: none;
   font-weight: 800;
-  font-size: 16px;
-  color: #000;
+  font-size: 14px;
+  color: var(--foreground) !important;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   border-radius: 12px;
@@ -27,7 +27,8 @@
 
 .react-calendar__navigation button:enabled:hover,
 .react-calendar__navigation button:enabled:focus {
-  background-color: #f3f4f6;
+  background-color: var(--muted) !important;
+  opacity: 0.1;
 }
 
 .react-calendar__month-view__weekdays {
@@ -36,7 +37,7 @@
   font-weight: 800;
   font-size: 10px;
   letter-spacing: 0.1em;
-  color: #9ca3af;
+  color: var(--muted) !important;
   margin-bottom: 12px;
 }
 
@@ -49,7 +50,7 @@
   background: none;
   font-weight: 600;
   font-size: 14px;
-  color: #000;
+  color: var(--foreground) !important;
   border-radius: 16px;
   transition: all 0.2s;
   height: 80px !important;
@@ -60,21 +61,24 @@
 }
 
 .react-calendar__month-view__days__day--neighboringMonth {
-  color: #d1d5db !important;
+  color: var(--muted) !important;
+  opacity: 0.5;
 }
 
 .react-calendar__tile:enabled:hover,
 .react-calendar__tile:enabled:focus {
-  background-color: #f9fafb !important;
+  background-color: var(--muted) !important;
+  opacity: 0.2 !important;
 }
 
 .react-calendar__tile--active {
-  background: #000 !important;
-  color: white !important;
+  background: var(--accent) !important;
+  color: var(--background) !important;
 }
 
 .react-calendar__tile--now {
-  background: #f3f4f6 !important;
+  background: var(--muted) !important;
+  opacity: 0.15;
   font-weight: 800;
 }
 

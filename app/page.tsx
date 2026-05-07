@@ -8,11 +8,11 @@ import SpendingChart from "@/app/components/SpendingChart"
 import CategoryBreakdown from "@/app/components/CategoryBreakdown"
 import BillCalendar from "@/app/components/BillCalendar"
 import BillShares from "@/app/components/BillShares"
-import { Trash2, Edit2, CheckCircle, Clock, Wallet, TrendingUp, PieChart as PieIcon, ArrowUpRight, CreditCard, Bell, AlertCircle, Calendar, RefreshCw } from 'lucide-react'
+import ThemeToggle from "@/app/components/ThemeToggle"
+import { Trash2, Edit2, CheckCircle, Clock, Wallet, TrendingUp, PieChart as PieIcon, ArrowUpRight, CreditCard, Bell, AlertCircle, Calendar, RefreshCw, FileText, Download } from 'lucide-react'
 import { isBefore, startOfToday, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import { FileText, Download } from 'lucide-react'
 
 interface Bill {
   id: string
@@ -225,24 +225,25 @@ export default function Home() {
   const totalDueThisMonth = thisMonthBills.reduce((acc, b) => acc + (b.status === 'unpaid' ? b.amount : 0), 0)
 
   return (
-    <main className="min-h-screen bg-[#fafafa] text-black pb-20">
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
+    <main className="min-h-screen bg-background text-foreground pb-20 transition-colors">
+      <header className="bg-card border-b border-border sticky top-0 z-40 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-              <div className="w-4 h-4 border-2 border-white rounded-sm rotate-45"></div>
+            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+              <div className="w-4 h-4 border-2 border-background rounded-sm rotate-45"></div>
             </div>
-            <h1 className="text-xl font-bold tracking-tight">Antigravity Bills</h1>
+            <h1 className="text-xl font-bold tracking-tight text-foreground">Antigravity Bills</h1>
           </div>
           <div className="flex items-center gap-4">
             <button 
               onClick={handleSendReminders}
               disabled={reminding}
-              className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-gray-100 transition-all disabled:opacity-50"
+              className="hidden md:flex items-center gap-2 px-4 py-2 bg-muted/10 border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/20 transition-all disabled:opacity-50 text-muted hover:text-foreground"
             >
               <Bell size={14} className={reminding ? 'animate-bounce' : ''} />
               {reminding ? 'Sending...' : 'Sync Reminders'}
             </button>
+            <ThemeToggle />
             <UserButton afterSignOutUrl="/"/>
           </div>
         </div>
@@ -252,18 +253,18 @@ export default function Home() {
         {/* Header Section */}
         <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <h2 className="text-4xl font-black mb-2 tracking-tight">Financial Overview</h2>
+            <h2 className="text-4xl font-black mb-2 tracking-tight text-foreground">Financial Overview</h2>
             <div className="flex items-center gap-3 mt-4">
               <button 
                 onClick={exportToPDF}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/10 transition-all shadow-sm text-foreground"
               >
                 <FileText size={14} />
                 Export PDF
               </button>
               <button 
                 onClick={exportToCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/10 transition-all shadow-sm text-foreground"
               >
                 <Download size={14} />
                 Export CSV
@@ -272,13 +273,13 @@ export default function Home() {
           </div>
           
           <div className="flex gap-4 w-full md:w-auto">
-            <div className="flex-1 md:w-64 p-6 bg-black text-white rounded-3xl shadow-2xl shadow-black/20 relative overflow-hidden group">
+            <div className="flex-1 md:w-64 p-6 bg-accent text-background rounded-3xl shadow-2xl dark:shadow-white/5 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                 <Wallet size={80} />
               </div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-1">Total Due This Month</p>
               <h3 className="text-3xl font-black">${totalDueThisMonth.toFixed(2)}</h3>
-              <div className="mt-4 flex items-center gap-1 text-[10px] font-bold text-green-400">
+              <div className="mt-4 flex items-center gap-1 text-[10px] font-bold opacity-80">
                 <ArrowUpRight size={12} />
                 <span>{thisMonthBills.filter(b => b.status === 'unpaid').length} PENDING BILLS</span>
               </div>
@@ -288,18 +289,18 @@ export default function Home() {
 
         {/* Analytics Grid */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
+          <div className="lg:col-span-2 p-8 bg-card rounded-3xl border border-border shadow-sm">
             <div className="flex items-center gap-2 mb-8">
-              <TrendingUp size={18} className="text-gray-400" />
-              <h3 className="text-lg font-bold">Monthly Spending</h3>
+              <TrendingUp size={18} className="text-muted" />
+              <h3 className="text-lg font-bold text-foreground">Monthly Spending</h3>
             </div>
             <SpendingChart bills={bills} />
           </div>
 
-          <div className="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
+          <div className="p-8 bg-card rounded-3xl border border-border shadow-sm">
             <div className="flex items-center gap-2 mb-8">
-              <PieIcon size={18} className="text-gray-400" />
-              <h3 className="text-lg font-bold">Category Breakdown</h3>
+              <PieIcon size={18} className="text-muted" />
+              <h3 className="text-lg font-bold text-foreground">Category Breakdown</h3>
             </div>
             <CategoryBreakdown bills={bills} />
           </div>
@@ -314,17 +315,17 @@ export default function Home() {
         <section>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">Manage Your Bills</h2>
-              <div className="text-sm font-semibold text-gray-400 uppercase tracking-widest mt-1">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">Manage Your Bills</h2>
+              <div className="text-sm font-semibold text-muted uppercase tracking-widest mt-1">
                 Total Outstanding: ${totalOutstanding.toFixed(2)}
               </div>
             </div>
 
-            <div className="bg-gray-100 p-1 rounded-2xl flex gap-1">
+            <div className="bg-muted/10 p-1 rounded-2xl flex gap-1">
               <button 
                 onClick={() => setViewMode('list')}
                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                  viewMode === 'list' ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                  viewMode === 'list' ? 'bg-card text-foreground shadow-sm' : 'text-muted hover:text-foreground'
                 }`}
               >
                 List View
@@ -332,7 +333,7 @@ export default function Home() {
               <button 
                 onClick={() => setViewMode('calendar')}
                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                  viewMode === 'calendar' ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                  viewMode === 'calendar' ? 'bg-card text-foreground shadow-sm' : 'text-muted hover:text-foreground'
                 }`}
               >
                 Calendar
@@ -355,26 +356,26 @@ export default function Home() {
                   return (
                     <div 
                       key={bill.id} 
-                      className={`group relative p-6 bg-white rounded-3xl shadow-sm border transition-all hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between h-full ${
+                      className={`group relative p-6 bg-card rounded-3xl shadow-sm border transition-all hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between h-full ${
                         isOverdue 
-                          ? 'border-red-100 bg-red-50/10' 
-                          : 'border-gray-100'
+                          ? 'border-red-500/30 bg-red-500/5' 
+                          : 'border-border'
                       } ${bill.status === 'paid' ? 'opacity-70 grayscale-[0.5]' : ''}`}
                     >
                       <div className="flex justify-between items-start mb-4">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted bg-muted/5 px-2 py-0.5 rounded-md border border-border">
                               {bill.category || 'Other'}
                             </span>
                             {bill.is_recurring && (
-                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 flex items-center gap-1">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-400/5 px-2 py-0.5 rounded-md border border-blue-400/20 flex items-center gap-1">
                                 <RefreshCw size={8} /> Recurring
                               </span>
                             )}
                           </div>
-                          <h3 className="text-xl font-bold text-gray-900 leading-tight">{bill.name}</h3>
-                          <div className={`flex items-center gap-1.5 mt-1 ${isOverdue ? 'text-red-500 animate-pulse' : 'text-gray-400'}`}>
+                          <h3 className="text-xl font-bold text-foreground leading-tight">{bill.name}</h3>
+                          <div className={`flex items-center gap-1.5 mt-1 ${isOverdue ? 'text-red-500 animate-pulse' : 'text-muted'}`}>
                             {isOverdue ? <AlertCircle size={12} /> : <Clock size={12} />}
                             <span className="text-[10px] font-black uppercase tracking-wider">
                               {isOverdue ? 'OVERDUE: ' : 'Due: '}
@@ -385,14 +386,14 @@ export default function Home() {
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                           <button 
                             onClick={() => setEditingBill(bill)}
-                            className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-black transition-colors"
+                            className="p-2 hover:bg-muted/10 rounded-xl text-muted hover:text-foreground transition-colors"
                             title="Edit Bill"
                           >
                             <Edit2 size={16} />
                           </button>
                           <button 
                             onClick={() => handleDelete(bill.id)}
-                            className="p-2 hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-600 transition-colors"
+                            className="p-2 hover:bg-red-500/10 rounded-xl text-muted hover:text-red-500 transition-colors"
                             title="Delete Bill"
                           >
                             <Trash2 size={16} />
@@ -404,15 +405,15 @@ export default function Home() {
 
                       <div className="mt-8 flex justify-between items-end">
                         <div>
-                          <p className={`text-3xl font-black leading-none tracking-tighter ${isOverdue ? 'text-red-600' : 'text-gray-900'}`}>
+                          <p className={`text-3xl font-black leading-none tracking-tighter ${isOverdue ? 'text-red-500' : 'text-foreground'}`}>
                             ${bill.amount.toFixed(2)}
                           </p>
                           <div className={`mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
                             bill.status === 'paid' 
-                              ? 'bg-green-50 text-green-600 border border-green-100' 
+                              ? 'bg-green-500/10 text-green-500 border border-green-500/20' 
                               : isOverdue
-                                ? 'bg-red-50 text-red-600 border border-red-100'
-                                : 'bg-orange-50 text-orange-600 border border-orange-100'
+                                ? 'bg-red-500/10 text-red-500 border border-red-500/20'
+                                : 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
                           }`}>
                             {bill.status === 'paid' ? <CheckCircle size={10} /> : <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isOverdue ? 'bg-red-500' : 'bg-orange-500'}`}></div>}
                             {isOverdue ? 'Overdue' : bill.status}
@@ -424,8 +425,8 @@ export default function Home() {
                             onClick={() => handleMarkAsPaid(bill.id)}
                             className={`px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg ${
                               isOverdue 
-                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200' 
-                                : 'bg-black hover:bg-gray-800 text-white shadow-black/10'
+                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-900/20' 
+                                : 'bg-accent text-background hover:opacity-90 shadow-accent/10'
                             }`}
                           >
                             Paid

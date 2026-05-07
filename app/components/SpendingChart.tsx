@@ -33,8 +33,8 @@ export default function SpendingChart({ bills }: { bills: Bill[] }) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-black text-white p-3 rounded-xl shadow-xl border border-gray-800 text-xs font-bold">
-          <p className="mb-1 uppercase tracking-widest opacity-50">{label}</p>
+        <div className="bg-card text-foreground p-3 rounded-xl shadow-2xl border border-border text-xs font-bold">
+          <p className="mb-1 uppercase tracking-widest text-muted">{label}</p>
           <p className="text-lg">${payload[0].value.toFixed(2)}</p>
         </div>
       )
@@ -46,30 +46,31 @@ export default function SpendingChart({ bills }: { bills: Bill[] }) {
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={last6Months} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
           <XAxis 
             dataKey="month" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }} 
+            tick={{ fill: 'var(--muted)', fontSize: 10, fontWeight: 800 }} 
             dy={10}
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }} 
+            tick={{ fill: 'var(--muted)', fontSize: 10, fontWeight: 800 }} 
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb' }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--muted)', opacity: 0.1 }} />
           <Bar 
             dataKey="total" 
-            radius={[6, 6, 0, 0]} 
+            radius={[10, 10, 0, 0]} 
             barSize={40}
           >
             {last6Months.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
-                fill={index === last6Months.length - 1 ? '#000000' : '#e5e7eb'} 
+                fill={index === last6Months.length - 1 ? 'var(--accent)' : 'var(--muted)'} 
                 className="transition-all duration-300 hover:opacity-80"
+                fillOpacity={index === last6Months.length - 1 ? 1 : 0.2}
               />
             ))}
           </Bar>

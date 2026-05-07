@@ -53,7 +53,7 @@ export default function BillCalendar({ bills, onMarkAsPaid }: BillCalendarProps)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2 bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm">
+      <div className="lg:col-span-2 bg-card p-8 rounded-[40px] border border-border shadow-sm">
         <Calendar 
           onChange={(value) => setSelectedDate(value as Date)} 
           value={selectedDate}
@@ -63,10 +63,10 @@ export default function BillCalendar({ bills, onMarkAsPaid }: BillCalendarProps)
       </div>
 
       <div className="flex flex-col gap-6">
-        <div className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm h-full overflow-hidden flex flex-col">
+        <div className="bg-card p-8 rounded-[40px] border border-border shadow-sm h-full overflow-hidden flex flex-col">
           <div className="mb-6">
-            <h3 className="text-xl font-black tracking-tight">{format(selectedDate, 'MMMM d, yyyy')}</h3>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Schedule for this day</p>
+            <h3 className="text-xl font-black tracking-tight text-foreground">{format(selectedDate, 'MMMM d, yyyy')}</h3>
+            <p className="text-xs font-bold text-muted uppercase tracking-widest mt-1">Schedule for this day</p>
           </div>
 
           <div className="flex-1 overflow-y-auto space-y-4 pr-2">
@@ -74,15 +74,15 @@ export default function BillCalendar({ bills, onMarkAsPaid }: BillCalendarProps)
               selectedBills.map(bill => {
                 const isOverdue = bill.status === 'unpaid' && isBefore(parseISO(bill.due_date), startOfToday())
                 return (
-                  <div key={bill.id} className="p-5 bg-gray-50 rounded-3xl border border-gray-100 space-y-3">
+                  <div key={bill.id} className="p-5 bg-background/50 rounded-3xl border border-border space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-muted">
                           {bill.category || 'Other'}
                         </span>
-                        <h4 className="font-bold text-gray-900">{bill.name}</h4>
+                        <h4 className="font-bold text-foreground">{bill.name}</h4>
                       </div>
-                      <p className="font-black text-gray-900">${bill.amount.toFixed(2)}</p>
+                      <p className="font-black text-foreground">${bill.amount.toFixed(2)}</p>
                     </div>
 
                     <div className="flex justify-between items-center">
@@ -98,7 +98,7 @@ export default function BillCalendar({ bills, onMarkAsPaid }: BillCalendarProps)
                       {bill.status === 'unpaid' && (
                         <button 
                           onClick={() => onMarkAsPaid(bill.id)}
-                          className="px-4 py-2 bg-black text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all"
+                          className="px-4 py-2 bg-accent text-background rounded-xl text-[9px] font-black uppercase tracking-widest hover:opacity-90 transition-all"
                         >
                           Pay Now
                         </button>
@@ -108,7 +108,7 @@ export default function BillCalendar({ bills, onMarkAsPaid }: BillCalendarProps)
                 )
               })
             ) : (
-              <div className="flex flex-col items-center justify-center py-10 opacity-30">
+              <div className="flex flex-col items-center justify-center py-10 opacity-30 text-muted">
                 <Clock size={32} />
                 <p className="text-[10px] font-black uppercase tracking-widest mt-4">No events scheduled</p>
               </div>

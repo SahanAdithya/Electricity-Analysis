@@ -86,13 +86,13 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-8 bg-white rounded-2xl shadow-sm border border-gray-100 space-y-6 transition-all hover:shadow-md">
+    <form onSubmit={handleSubmit} className="p-8 bg-card rounded-2xl shadow-sm border border-border space-y-6 transition-all hover:shadow-md">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-black text-white rounded-lg">
+          <div className="p-2 bg-accent text-background rounded-lg">
             <Plus size={20} />
           </div>
-          <h2 className="text-xl font-bold text-gray-900">Add New Bill</h2>
+          <h2 className="text-xl font-bold text-foreground">Add New Bill</h2>
         </div>
         
         <div className="flex flex-wrap gap-4">
@@ -104,9 +104,9 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
                 onChange={(e) => setIsRecurring(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-10 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+              <div className="w-10 h-6 bg-muted/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors">
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted group-hover:text-foreground transition-colors">
               Recurring
             </span>
           </label>
@@ -119,9 +119,9 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
                 onChange={(e) => setIsSplit(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-10 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+              <div className="w-10 h-6 bg-muted/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors">
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted group-hover:text-foreground transition-colors">
               Split with Roommates
             </span>
           </label>
@@ -131,24 +131,24 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* ... existing fields ... */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+          <label className="text-xs font-semibold text-muted uppercase tracking-wider flex items-center gap-2">
             <Tag size={12} /> Bill Name
           </label>
           <input 
             type="text" placeholder="e.g. Rent" value={name} required
             onChange={(e) => setName(e.target.value)}
-            className="w-full border-gray-200 border p-3 rounded-xl text-black focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none bg-gray-50/50"
+            className="w-full border-border border p-3 rounded-xl text-foreground focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none bg-background/50"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+          <label className="text-xs font-semibold text-muted uppercase tracking-wider flex items-center gap-2">
             <LayoutGrid size={12} /> Category
           </label>
           <select 
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full border-gray-200 border p-3 rounded-xl text-black focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none bg-gray-50/50"
+            className="w-full border-border border p-3 rounded-xl text-foreground focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none bg-background/50"
           >
             {CATEGORIES.map(cat => (
               <option key={cat} value={cat}>{cat}</option>
@@ -157,36 +157,36 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+          <label className="text-xs font-semibold text-muted uppercase tracking-wider flex items-center gap-2">
             <CreditCard size={12} /> Total Amount
           </label>
           <input 
             type="number" step="0.01" placeholder="0.00" value={amount} required
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full border-gray-200 border p-3 rounded-xl text-black focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none bg-gray-50/50"
+            className="w-full border-border border p-3 rounded-xl text-foreground focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none bg-background/50"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+          <label className="text-xs font-semibold text-muted uppercase tracking-wider flex items-center gap-2">
             <Calendar size={12} /> Due Date
           </label>
           <input 
             type="date" value={date} required
             onChange={(e) => setDate(e.target.value)}
-            className="w-full border-gray-200 border p-3 rounded-xl text-black focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none bg-gray-50/50"
+            className="w-full border-border border p-3 rounded-xl text-foreground focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none bg-background/50"
           />
         </div>
       </div>
 
       {isSplit && (
-        <div className="pt-6 border-t border-gray-100 animate-in slide-in-from-top-4 duration-300">
+        <div className="pt-6 border-t border-border animate-in slide-in-from-top-4 duration-300">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Roommate Shares</h3>
+            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Roommate Shares</h3>
             <button 
               type="button" 
               onClick={handleAddRoommate}
-              className="text-[10px] font-black uppercase tracking-widest text-black hover:opacity-70 transition-opacity"
+              className="text-[10px] font-black uppercase tracking-widest text-accent hover:opacity-70 transition-opacity"
             >
               + Add Roommate
             </button>
@@ -197,18 +197,18 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
                 <input 
                   type="text" placeholder="Name" value={roommate.name}
                   onChange={(e) => handleRoommateChange(index, 'name', e.target.value)}
-                  className="flex-1 border-gray-200 border p-2.5 rounded-xl text-sm focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none bg-gray-50/50"
+                  className="flex-1 border-border border p-2.5 rounded-xl text-sm focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none bg-background/50 text-foreground"
                 />
                 <input 
                   type="number" step="0.01" placeholder="Amount" value={roommate.amount}
                   onChange={(e) => handleRoommateChange(index, 'amount', e.target.value)}
-                  className="w-32 border-gray-200 border p-2.5 rounded-xl text-sm focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none bg-gray-50/50"
+                  className="w-32 border-border border p-2.5 rounded-xl text-sm focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none bg-background/50 text-foreground"
                 />
                 {roommates.length > 1 && (
                   <button 
                     type="button" 
                     onClick={() => handleRemoveRoommate(index)}
-                    className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                    className="p-2 text-muted hover:text-red-500 transition-colors"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -222,7 +222,7 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
       <button 
         type="submit" 
         disabled={loading}
-        className="w-full bg-black text-white py-4 rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-[0.98] disabled:opacity-50"
+        className="w-full bg-accent text-background py-4 rounded-xl font-bold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50"
       >
         {loading ? 'Adding...' : 'Create Bill Entry'}
       </button>
