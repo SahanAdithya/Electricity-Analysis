@@ -5,7 +5,6 @@ import { supabase } from '@/utils/supabase'
 import ThemeToggle from "@/app/components/ThemeToggle"
 import ElectricityDashboard from "@/app/components/ElectricityDashboard"
 import LogElectricity from "@/app/components/LogElectricity"
-import EnergyAIInsights from "@/app/components/EnergyAIInsights"
 import { TrendingUp, PieChart as PieIcon, ArrowUpRight, Bell, RefreshCw, FileText, Download, LayoutGrid, Settings, ArrowRight, Trash2, Clock, Zap } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, parseISO, isBefore } from 'date-fns'
 import jsPDF from 'jspdf'
@@ -128,9 +127,6 @@ export default function Home() {
             </div>
           </div>
           <ElectricityDashboard bills={bills} />
-          <div className="mt-12">
-            <EnergyAIInsights bills={bills} />
-          </div>
         </section>
 
         <hr className="border-border opacity-50" />
