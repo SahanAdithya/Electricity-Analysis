@@ -10,6 +10,9 @@ import BillCalendar from "@/app/components/BillCalendar"
 import BillShares from "@/app/components/BillShares"
 import { Trash2, Edit2, CheckCircle, Clock, Wallet, TrendingUp, PieChart as PieIcon, ArrowUpRight, CreditCard, Bell, AlertCircle, Calendar, RefreshCw } from 'lucide-react'
 import { isBefore, startOfToday, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import { FileText, Download } from 'lucide-react'
 
 interface Bill {
   id: string
@@ -145,6 +148,74 @@ export default function Home() {
     }
   }
 
+  const exportToPDF = () => {
+    const doc = new jsPDF()
+    const today = format(new Date(), 'PPP')
+
+    // Branded Header
+    doc.setFontSize(22)
+    doc.setFont('helvetica', 'bold')
+    doc.text('ANTIGRAVITY BILLS', 14, 20)
+    
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Financial Statement Generated: ${today}`, 14, 28)
+    doc.text(`User: ${user?.fullName || user?.firstName}`, 14, 34)
+
+    // Summary Section
+    doc.setFontSize(14)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Summary', 14, 50)
+    
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Total Outstanding: $${totalOutstanding.toFixed(2)}`, 14, 58)
+    doc.text(`Due This Month: $${totalDueThisMonth.toFixed(2)}`, 14, 64)
+
+    // Bills Table
+    autoTable(doc, {
+      startY: 75,
+      head: [['Bill Name', 'Category', 'Amount', 'Due Date', 'Status']],
+      body: bills.map(b => [
+        b.name, 
+        b.category || 'Other', 
+        `$${b.amount.toFixed(2)}`, 
+        format(parseISO(b.due_date), 'MMM dd, yyyy'),
+        b.status.toUpperCase()
+      ]),
+      headStyles: { fillStyle: 'black', fillColor: [0, 0, 0] },
+      styles: { fontSize: 9 },
+    })
+
+    doc.save(`Antigravity_Bills_${format(new Date(), 'yyyy-MM-dd')}.pdf`)
+  }
+
+  const exportToCSV = () => {
+    const headers = ['Bill Name', 'Category', 'Amount', 'Due Date', 'Status']
+    const rows = bills.map(b => [
+      b.name,
+      b.category || 'Other',
+      b.amount,
+      b.due_date,
+      b.status
+    ])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(e => e.join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `Bills_Report_${format(new Date(), 'yyyy-MM-dd')}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const totalOutstanding = bills.reduce((acc, b) => acc + (b.status === 'unpaid' ? b.amount : 0), 0)
   const thisMonthBills = bills.filter(b => {
     const d = new Date(b.due_date)
@@ -182,7 +253,22 @@ export default function Home() {
         <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h2 className="text-4xl font-black mb-2 tracking-tight">Financial Overview</h2>
-            <p className="text-gray-500 font-medium">Welcome back, {user?.firstName || 'User'}. Here's your spending summary.</p>
+            <div className="flex items-center gap-3 mt-4">
+              <button 
+                onClick={exportToPDF}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm"
+              >
+                <FileText size={14} />
+                Export PDF
+              </button>
+              <button 
+                onClick={exportToCSV}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm"
+              >
+                <Download size={14} />
+                Export CSV
+              </button>
+            </div>
           </div>
           
           <div className="flex gap-4 w-full md:w-auto">
