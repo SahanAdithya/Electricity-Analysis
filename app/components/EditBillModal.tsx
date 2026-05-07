@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/utils/supabase'
-import { X } from 'lucide-react'
+import { X, RefreshCw } from 'lucide-react'
 
 const CATEGORIES = ['Rent', 'Utilities', 'Subscriptions', 'Food', 'Transport', 'Other']
 
@@ -12,6 +12,7 @@ interface Bill {
   due_date: string
   status: string
   category?: string
+  is_recurring?: boolean
 }
 
 interface EditBillModalProps {
@@ -26,6 +27,7 @@ export default function EditBillModal({ bill, isOpen, onClose, onBillUpdated }: 
   const [amount, setAmount] = useState(bill.amount.toString())
   const [date, setDate] = useState(bill.due_date)
   const [category, setCategory] = useState(bill.category || 'Other')
+  const [isRecurring, setIsRecurring] = useState(bill.is_recurring || false)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -33,6 +35,7 @@ export default function EditBillModal({ bill, isOpen, onClose, onBillUpdated }: 
     setAmount(bill.amount.toString())
     setDate(bill.due_date)
     setCategory(bill.category || 'Other')
+    setIsRecurring(bill.is_recurring || false)
   }, [bill])
 
   if (!isOpen) return null
@@ -47,7 +50,8 @@ export default function EditBillModal({ bill, isOpen, onClose, onBillUpdated }: 
         name,
         amount: parseFloat(amount),
         due_date: date,
-        category
+        category,
+        is_recurring: isRecurring
       })
       .eq('id', bill.id)
 
@@ -72,7 +76,23 @@ export default function EditBillModal({ bill, isOpen, onClose, onBillUpdated }: 
           <X size={20} />
         </button>
 
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">Edit Bill</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">Edit Bill</h2>
+          <label className="flex items-center gap-2 cursor-pointer group">
+            <div className="relative">
+              <input 
+                type="checkbox" 
+                checked={isRecurring}
+                onChange={(e) => setIsRecurring(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-10 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors flex items-center gap-1.5">
+              Recurring
+            </span>
+          </label>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
