@@ -18,8 +18,6 @@ export const metadata: Metadata = {
   description: "Track your home bills easily",
 };
 
-import { ThemeProvider } from 'next-themes'
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,13 +28,8 @@ export default function RootLayout({
       <html
         lang="en"
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-        suppressHydrationWarning
       >
-        <body className="min-h-full flex flex-col">
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            {children}
-          </ThemeProvider>
-        </body>
+        <body className="min-h-full flex flex-col">{children}</body>
       </html>
     </ClerkProvider>
   );

@@ -1,33 +1,29 @@
 'use client'
 import { SignInButton, useUser } from "@clerk/nextjs"
-import { Zap, Activity, Shield, TrendingDown, Globe, ArrowRight, Play, BarChart3, Leaf, TreePine, Sun, Moon } from 'lucide-react'
+import { Zap, Activity, Shield, TrendingDown, Globe, ArrowRight, Play, BarChart3, Leaf, TreePine } from 'lucide-react'
 import Link from 'next/link'
-import { ThemeToggle } from './ThemeToggle'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-green-500 selection:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-black text-white selection:bg-accent selection:text-background">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 border-b border-zinc-200 dark:border-white/10 backdrop-blur-xl bg-white/80 dark:bg-black/80 transition-colors">
+      <nav className="fixed top-0 w-full z-50 border-b border-white/10 backdrop-blur-xl bg-black/80">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-lg shadow-green-500/20">
               <Zap size={18} className="text-black fill-current" />
             </div>
-            <span className="text-xl font-bold tracking-tighter text-foreground">Electricity Analyst</span>
+            <span className="text-xl font-bold tracking-tighter text-white">Electricity Analyst</span>
           </div>
           <div className="flex items-center gap-8">
-            <div className="hidden md:flex gap-8 text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+            <div className="hidden md:flex gap-8 text-[10px] font-black uppercase tracking-widest text-zinc-400">
               <a href="#features" className="hover:text-green-500 transition-colors">Features</a>
               <a href="#impact" className="hover:text-green-500 transition-colors">Impact</a>
               <a href="#security" className="hover:text-green-500 transition-colors">Security</a>
             </div>
-            <div className="flex items-center gap-4">
-              <ThemeToggle />
-              <Link href="/sign-in" className="px-6 py-2.5 bg-green-500 text-black rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white dark:hover:bg-zinc-800 dark:hover:text-white transition-all shadow-lg shadow-green-500/20">
-                Sign In
-              </Link>
-            </div>
+            <Link href="/sign-in" className="px-6 py-2.5 bg-green-500 text-black rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white transition-all shadow-lg shadow-green-500/20">
+              Sign In
+            </Link>
           </div>
         </div>
       </nav>
@@ -44,7 +40,7 @@ export default function LandingPage() {
             Energy Intelligence Platform
           </div>
           
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] max-w-4xl mx-auto text-foreground">
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] max-w-4xl mx-auto text-white">
             MASTER YOUR <span className="text-green-500 underline decoration-green-500/30 decoration-8 underline-offset-[12px]">CONSUMPTION.</span>
           </h1>
           
@@ -162,7 +158,7 @@ export default function LandingPage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-green-500">
               Environmental Stewardship
             </div>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-foreground">Your data can <span className="text-green-500">save the world.</span></h2>
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">Your data can <span className="text-green-500">save the world.</span></h2>
             <p className="text-zinc-300 text-lg leading-relaxed font-medium">
               Every kWh you save is a step toward a cooler planet. We transform complex energy metrics into actionable environmental insights.
             </p>
@@ -197,62 +193,62 @@ export default function LandingPage() {
       </section>
 
       {/* Security Section */}
-      <section id="security" className="py-40 relative border-t border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-[#030303] transition-colors">
+      <section id="security" className="py-40 relative border-t border-white/5 bg-[#030303]">
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-green-500/5 blur-[120px] rounded-full -z-10"></div>
         <div className="max-w-7xl mx-auto px-6 text-center space-y-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-green-500">
              Fort Knox Data Security
           </div>
-          <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-foreground mx-auto max-w-4xl">Your privacy is our <span className="text-green-500">absolute priority.</span></h2>
+          <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white mx-auto max-w-4xl">Your privacy is our <span className="text-green-500">absolute priority.</span></h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
-             <div className="p-10 rounded-[40px] border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec shadow-sm">
+             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec">
                 <Shield className="text-green-500 mb-6 group-hover/sec:scale-110 transition-transform" size={32} />
-                <h4 className="text-xl font-black text-foreground mb-4 uppercase">Encrypted Storage</h4>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Your bill data is stored in AES-256 encrypted vaults, isolated at the database level.</p>
+                <h4 className="text-xl font-black text-white mb-4 uppercase">Encrypted Storage</h4>
+                <p className="text-zinc-400 text-sm font-medium">Your bill data is stored in AES-256 encrypted vaults, isolated at the database level.</p>
              </div>
-             <div className="p-10 rounded-[40px] border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec shadow-sm">
+             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec">
                 <Activity className="text-green-500 mb-6 group-hover/sec:scale-110 transition-transform" size={32} />
-                <h4 className="text-xl font-black text-foreground mb-4 uppercase">Secure Auth</h4>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Multi-factor authentication powered by industry-leading identity protocols.</p>
+                <h4 className="text-xl font-black text-white mb-4 uppercase">Secure Auth</h4>
+                <p className="text-zinc-400 text-sm font-medium">Multi-factor authentication powered by industry-leading identity protocols.</p>
              </div>
-             <div className="p-10 rounded-[40px] border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec shadow-sm">
+             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec">
                 <Globe className="text-green-500 mb-6 group-hover/sec:scale-110 transition-transform" size={32} />
-                <h4 className="text-xl font-black text-foreground mb-4 uppercase">Zero Sharing</h4>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">We never sell or share your energy usage patterns with 3rd party providers.</p>
+                <h4 className="text-xl font-black text-white mb-4 uppercase">Zero Sharing</h4>
+                <p className="text-zinc-400 text-sm font-medium">We never sell or share your energy usage patterns with 3rd party providers.</p>
              </div>
           </div>
         </div>
       </section>
 
       {/* Social Proof / Stats */}
-      <section className="py-32 bg-zinc-100 dark:bg-zinc-900/50 border-y border-zinc-200 dark:border-white/10 transition-colors">
+      <section className="py-32 bg-zinc-900/50 border-y border-white/10">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
           <div>
             <h4 className="text-5xl font-black mb-2 text-green-500 tracking-tighter">15%</h4>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-300">Avg. Bill Reduction</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">Avg. Bill Reduction</p>
           </div>
           <div>
-            <h4 className="text-5xl font-black mb-2 tracking-tighter text-foreground">2.4k</h4>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-300">Active Analysts</p>
+            <h4 className="text-5xl font-black mb-2 tracking-tighter text-white">2.4k</h4>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">Active Analysts</p>
           </div>
           <div>
             <h4 className="text-5xl font-black mb-2 text-green-500 tracking-tighter">800t</h4>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-300">CO2 Offset Yearly</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">CO2 Offset Yearly</p>
           </div>
           <div>
-            <h4 className="text-5xl font-black mb-2 tracking-tighter text-foreground">A+</h4>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-300">Efficiency Rating</p>
+            <h4 className="text-5xl font-black mb-2 tracking-tighter text-white">A+</h4>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">Efficiency Rating</p>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-40 text-center relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-green-500/5 blur-[120px] rounded-full -z-10"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-accent/10 blur-[120px] rounded-full -z-10"></div>
         <div className="max-w-3xl mx-auto px-6 space-y-12">
-          <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-foreground">Ready to optimize your footprint?</h2>
-          <Link href="/sign-up" className="px-12 py-6 bg-green-500 text-black dark:bg-white dark:text-black rounded-3xl font-black uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition-all shadow-[0_0_50px_rgba(34,197,94,0.1)]">
+          <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">Ready to optimize your footprint?</h2>
+          <Link href="/sign-up" className="px-12 py-6 bg-white text-black rounded-3xl font-black uppercase tracking-widest hover:bg-green-500 hover:text-white transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)] hover:shadow-green-500/20">
             Create Free Account
           </Link>
           <p className="text-zinc-500 text-xs font-black uppercase tracking-widest">No credit card required • Join the energy revolution</p>
@@ -271,13 +267,13 @@ export default function LandingPage() {
 
 function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
   return (
-    <div className="p-10 rounded-[40px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:scale-[1.02] transition-all group relative overflow-hidden">
+    <div className="p-10 rounded-[40px] bg-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:scale-[1.02] transition-all group relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-3xl -z-10 group-hover:bg-green-500/10 transition-colors"></div>
-      <div className="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-8 text-green-600 dark:text-green-400 group-hover:bg-green-500 group-hover:text-white transition-all border border-green-500/10">
+      <div className="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-8 text-green-600 group-hover:bg-green-500 group-hover:text-white transition-all border border-green-500/10">
         {icon}
       </div>
-      <h3 className="text-2xl font-black mb-4 uppercase tracking-tight text-foreground">{title}</h3>
-      <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed font-semibold">{desc}</p>
+      <h3 className="text-2xl font-black mb-4 uppercase tracking-tight text-black">{title}</h3>
+      <p className="text-zinc-600 text-sm leading-relaxed font-semibold">{desc}</p>
     </div>
   )
 }

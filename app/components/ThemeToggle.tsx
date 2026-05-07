@@ -1,33 +1,40 @@
 'use client'
+import { useState, useEffect } from 'react'
+import { Sun, Moon } from 'lucide-react'
 
-import * as React from "react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
+export default function ThemeToggle() {
+  const [isDark, setIsDark] = useState(false)
 
-export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
+  useEffect(() => {
+    // Check local storage or system preference
+    const savedTheme = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
 
-  // Avoid hydration mismatch
-  React.useEffect(() => {
-    setMounted(true)
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      setIsDark(true)
+      document.documentElement.classList.add('dark')
+    }
   }, [])
 
-  if (!mounted) return (
-    <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800" />
-  )
+  const toggleTheme = () => {
+    if (isDark) {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+      setIsDark(false)
+    } else {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+      setIsDark(true)
+    }
+  }
 
   return (
-    <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:scale-105 transition-all shadow-sm"
-      aria-label="Toggle theme"
+    <button 
+      onClick={toggleTheme}
+      className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-all shadow-sm active:scale-95"
+      title={isDark ? 'Switch to Light Mode' : 'Switch to OLED Dark'}
     >
-      {theme === "dark" ? (
-        <Sun size={18} className="animate-in fade-in zoom-in duration-300" />
-      ) : (
-        <Moon size={18} className="animate-in fade-in zoom-in duration-300" />
-      )}
+      {isDark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   )
 }
