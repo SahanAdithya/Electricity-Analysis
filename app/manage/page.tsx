@@ -57,6 +57,19 @@ export default function ManageBills() {
       setBudget(data.monthly_budget)
     }
   }, [user])
+  const updateBudget = async (newBudget: number) => {
+    if (!user) return
+    setBudget(newBudget)
+    const { error } = await supabase
+      .from('user_settings')
+      .upsert({ 
+        user_id: user.id, 
+        monthly_budget: newBudget,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' })
+    
+    if (error) console.error('Error updating budget:', error)
+  }
 
   useEffect(() => {
     fetchBills()
@@ -111,7 +124,7 @@ export default function ManageBills() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <UserButton afterSignOutUrl="/"/>
+            <UserButton />
           </div>
         </div>
       </header>

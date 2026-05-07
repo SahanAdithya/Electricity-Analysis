@@ -135,7 +135,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <UserButton afterSignOutUrl="/"/>
+            <UserButton />
           </div>
         </div>
       </header>
