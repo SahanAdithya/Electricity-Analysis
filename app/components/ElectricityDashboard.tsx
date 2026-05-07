@@ -1,6 +1,6 @@
 'use client'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
-import { Zap, TrendingDown, TrendingUp, DollarSign, Activity } from 'lucide-react'
+import { Zap, TrendingDown, TrendingUp, DollarSign, Activity, Leaf, TreePine, Globe } from 'lucide-react'
 import { format, parseISO, startOfMonth, subMonths, isSameMonth } from 'date-fns'
 
 interface Bill {
@@ -29,10 +29,13 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
     ? (consumptionTrend / previousBill.units_consumed) * 100
     : 0
 
+  const co2Factor = 0.475 // kg CO2 per kWh
+
   const chartData = electricityBills.slice(-6).map(b => ({
     date: format(parseISO(b.due_date), 'MMM'),
     kWh: b.units_consumed || 0,
-    cost: b.amount
+    cost: b.amount,
+    co2: (b.units_consumed || 0) * co2Factor
   }))
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -46,6 +49,10 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
               <span className="font-bold text-accent">{payload[0].value} kWh</span>
             </p>
             <p className="flex justify-between gap-4">
+              <span className="text-muted">Impact:</span>
+              <span className="font-bold text-green-500">{payload[2].value.toFixed(1)} kg CO₂</span>
+            </p>
+            <p className="flex justify-between gap-4">
               <span className="text-muted">Cost:</span>
               <span className="font-bold">${payload[1].value.toFixed(2)}</span>
             </p>
@@ -56,10 +63,14 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
     return null
   }
 
+  const latestKwh = latestBill?.units_consumed || 0
+  const latestEmissions = latestKwh * co2Factor
+  const treesNeeded = latestEmissions / 1.75 // Average tree absorbs 1.75kg CO2/month
+
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       {/* Hero Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div className="md:col-span-2 p-8 bg-accent text-background rounded-[40px] shadow-2xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
             <Zap size={120} />
@@ -71,13 +82,37 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
             </div>
             <div className="flex items-baseline gap-2">
               <h3 className="text-6xl font-black tracking-tighter">
-                {latestBill?.units_consumed || 0}
+                {latestKwh}
               </h3>
               <span className="text-xl font-bold opacity-70">kWh</span>
             </div>
             <p className="mt-4 text-sm font-bold opacity-80 max-w-[200px]">
-              Your electricity usage is {Math.abs(trendPercent).toFixed(1)}% {trendPercent > 0 ? 'higher' : 'lower'} than last month.
+              Usage is {Math.abs(trendPercent).toFixed(1)}% {trendPercent > 0 ? 'higher' : 'lower'} than last month.
             </p>
+          </div>
+        </div>
+
+        {/* Planet Impact Card */}
+        <div className="p-8 bg-green-500 text-white rounded-[40px] shadow-2xl relative overflow-hidden group">
+          <div className="absolute -bottom-4 -right-4 opacity-10 group-hover:scale-110 transition-transform">
+            <Leaf size={100} />
+          </div>
+          <div className="relative z-10 flex flex-col justify-between h-full">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Globe size={16} className="opacity-70" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">Planet Impact</span>
+              </div>
+              <h3 className="text-3xl font-black tracking-tighter">
+                {latestEmissions.toFixed(1)} <span className="text-sm font-bold opacity-70">kg CO₂</span>
+              </h3>
+            </div>
+            <div className="mt-4 flex items-center gap-2 bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
+              <TreePine size={18} />
+              <p className="text-[10px] font-bold uppercase tracking-wider leading-tight">
+                Requires {Math.ceil(treesNeeded)} trees to offset this month
+              </p>
+            </div>
           </div>
         </div>
 
@@ -131,6 +166,10 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
               <span className="text-[10px] font-black uppercase tracking-widest text-muted">kWh Usage</span>
             </div>
             <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted">Carbon Footprint</span>
+            </div>
+            <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-muted/30"></div>
               <span className="text-[10px] font-black uppercase tracking-widest text-muted">Bill Cost ($)</span>
             </div>
@@ -144,6 +183,10 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
                 <linearGradient id="colorKwh" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3}/>
                   <stop offset="95%" stopColor="var(--accent)" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorCo2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
@@ -176,6 +219,15 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
                 strokeWidth={4}
                 fillOpacity={1} 
                 fill="url(#colorKwh)" 
+              />
+              <Area 
+                yAxisId="left"
+                type="monotone" 
+                dataKey="co2" 
+                stroke="#22c55e" 
+                strokeWidth={2}
+                fillOpacity={1} 
+                fill="url(#colorCo2)" 
               />
               <Area 
                 yAxisId="right"
