@@ -1,6 +1,6 @@
 'use client'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
-import { Zap, TrendingDown, TrendingUp, DollarSign, Activity, Leaf, TreePine, Globe, Target, Trophy } from 'lucide-react'
+import { Zap, TrendingDown, TrendingUp, DollarSign, Activity, Leaf, TreePine, Globe, Target, Trophy, AlertTriangle } from 'lucide-react'
 import { format, parseISO, startOfMonth, subMonths, isSameMonth } from 'date-fns'
 
 interface Bill {
@@ -80,8 +80,27 @@ export default function ElectricityDashboard({
   const isOnTrack = latestKwh <= targetKwh
   const goalProgress = previousKwh > 0 ? (latestKwh / previousKwh) * 100 : 0
 
+  const latestUnitCost = latestBill && latestBill.units_consumed ? (latestBill.amount / latestBill.units_consumed) : 0
+  const previousUnitCost = previousBill && previousBill.units_consumed ? (previousBill.amount / previousBill.units_consumed) : 0
+  const priceHike = previousUnitCost > 0 ? ((latestUnitCost - previousUnitCost) / previousUnitCost) * 100 : 0
+
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
+      {/* Price Hike Alert */}
+      {priceHike > 1 && (
+        <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-[20px] flex items-center gap-4 animate-in slide-in-from-top-4 duration-500">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-orange-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+              <AlertTriangle size={20} />
+            </div>
+            <div>
+              <h4 className="text-sm font-black text-foreground uppercase tracking-tight">Utility Rate Increase Detected</h4>
+              <p className="text-[10px] font-bold text-muted uppercase tracking-widest">Your cost per kWh has jumped by {priceHike.toFixed(1)}% since last month.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Stats */}
       <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
         <div className="md:col-span-2 p-8 bg-accent text-background rounded-[40px] shadow-2xl relative overflow-hidden group">

@@ -5,6 +5,7 @@ import { supabase } from '@/utils/supabase'
 import ThemeToggle from "@/app/components/ThemeToggle"
 import ElectricityDashboard from "@/app/components/ElectricityDashboard"
 import LogElectricity from "@/app/components/LogElectricity"
+import ApplianceBreakdown from "@/app/components/ApplianceBreakdown"
 import { TrendingUp, PieChart as PieIcon, ArrowUpRight, Bell, RefreshCw, FileText, Download, LayoutGrid, Settings, ArrowRight, Trash2, Clock, Zap } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, parseISO, isBefore } from 'date-fns'
 import jsPDF from 'jspdf'
@@ -151,6 +152,17 @@ export default function Home() {
             bills={bills} 
             reductionGoal={reductionGoal}
             onGoalUpdate={updateReductionGoal}
+          />
+        </section>
+
+        {/* Appliance Breakdown Tool */}
+        <section>
+          <ApplianceBreakdown 
+            totalKwh={
+              bills
+                .filter(b => b.category === 'Electricity')
+                .sort((a, b) => new Date(b.due_date).getTime() - new Date(a.due_date).getTime())[0]?.units_consumed || 0
+            } 
           />
         </section>
 
