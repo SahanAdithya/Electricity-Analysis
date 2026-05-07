@@ -9,7 +9,7 @@ import BillShares from "@/app/components/BillShares"
 import ThemeToggle from "@/app/components/ThemeToggle"
 import SpendingChart from "@/app/components/SpendingChart"
 import CategoryBreakdown from "@/app/components/CategoryBreakdown"
-import { Trash2, Edit2, CheckCircle, Clock, Wallet, ArrowUpRight, Bell, AlertCircle, RefreshCw, LayoutGrid, List, Calendar, TrendingUp, PieChart as PieIcon } from 'lucide-react'
+import { Trash2, Edit2, CheckCircle, Clock, Wallet, ArrowUpRight, Bell, AlertCircle, RefreshCw, LayoutGrid, List, Calendar, TrendingUp, PieChart as PieIcon, ArrowLeft } from 'lucide-react'
 import { isBefore, startOfToday, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
 import Link from 'next/link'
 
@@ -95,12 +95,19 @@ export default function ManageBills() {
       <header className="bg-card border-b border-border sticky top-0 z-40 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 bg-accent/10 text-accent rounded-lg flex items-center justify-center group-hover:bg-accent group-hover:text-background transition-all">
-                <LayoutGrid size={16} />
+            <Link 
+              href="/"
+              className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-all"
+            >
+              <ArrowLeft size={16} /> Back to Analysis
+            </Link>
+            <div className="h-4 w-px bg-border"></div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-muted border border-border rounded-lg flex items-center justify-center">
+                <LayoutGrid size={16} className="text-muted" />
               </div>
               <h1 className="text-xl font-bold tracking-tight text-foreground">Manage Bills</h1>
-            </Link>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
