@@ -31,24 +31,64 @@ export default function Home() {
   const [editingBill, setEditingBill] = useState<Bill | null>(null)
   const [reminding, setReminding] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
+  const [budget, setBudget] = useState<number>(2000)
+  const [loadingSettings, setLoadingSettings] = useState(true)
 
   const fetchBills = useCallback(async () => {
     if (!user) return
-    
-    setLoading(true)
     const { data, error } = await supabase
       .from('bills')
       .select('*')
       .eq('user_id', user.id)
       .order('due_date', { ascending: true })
 
-    if (error) {
-      console.error('Error fetching bills:', error)
-    } else {
-      setBills(data || [])
-    }
+    if (error) console.error('Error fetching bills:', error)
+    else setBills(data || [])
     setLoading(false)
   }, [user])
+
+  const fetchUserSettings = useCallback(async () => {
+    if (!user) return
+    const { data, error } = await supabase
+      .from('user_settings')
+      .select('monthly_budget')
+      .eq('user_id', user.id)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Create settings if not exist
+        await supabase.from('user_settings').insert({ user_id: user.id, monthly_budget: 2000 })
+      } else {
+        console.error('Error fetching settings:', error)
+      }
+    } else if (data) {
+      setBudget(data.monthly_budget)
+    }
+    setLoadingSettings(false)
+  }, [user])
+
+  useEffect(() => {
+    fetchBills()
+    fetchUserSettings()
+
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bills' }, () => fetchBills())
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
+  }, [fetchBills, fetchUserSettings])
+
+  const updateBudget = async (newBudget: number) => {
+    if (!user) return
+    setBudget(newBudget)
+    const { error } = await supabase
+      .from('user_settings')
+      .update({ monthly_budget: newBudget })
+      .eq('user_id', user.id)
+    if (error) console.error(error)
+  }
 
   const checkAndCreateRecurringBills = useCallback(async (currentBills: Bill[]) => {
     if (!user || currentBills.length === 0) return
@@ -222,7 +262,14 @@ export default function Home() {
     const now = new Date()
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
   })
-  const totalDueThisMonth = thisMonthBills.reduce((acc, b) => acc + (b.status === 'unpaid' ? b.amount : 0), 0)
+  const totalDueThisMonth = thisMonthBills.reduce((acc, b) => acc + b.amount, 0)
+  const remainingBudget = Math.max(0, budget - totalDueThisMonth)
+  const budgetProgress = Math.min(100, (totalDueThisMonth / budget) * 100)
+
+  // Smart Prediction: Next Month = Sum of Recurring Bills
+  const predictedNextMonth = bills
+    .filter(b => b.is_recurring)
+    .reduce((acc, b) => acc + b.amount, 0)
 
   return (
     <main className="min-h-screen bg-background text-foreground pb-20 transition-colors">
@@ -249,7 +296,9 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 pt-12 space-y-8">
+      <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
+        <AddBill remainingBudget={remainingBudget} onBillAdded={() => {}} />
+
         {/* Header Section */}
         <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
@@ -272,17 +321,55 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex gap-4 w-full md:w-auto">
-            <div className="flex-1 md:w-64 p-6 bg-accent text-background rounded-3xl shadow-2xl dark:shadow-white/5 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                <Wallet size={80} />
-              </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-1">Total Due This Month</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full md:w-auto">
+            {/* Total Due Card */}
+            <div className="p-6 bg-accent text-background rounded-3xl shadow-2xl dark:shadow-white/5 relative overflow-hidden group">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-1">Due This Month</p>
               <h3 className="text-3xl font-black">${totalDueThisMonth.toFixed(2)}</h3>
               <div className="mt-4 flex items-center gap-1 text-[10px] font-bold opacity-80">
                 <ArrowUpRight size={12} />
-                <span>{thisMonthBills.filter(b => b.status === 'unpaid').length} PENDING BILLS</span>
+                <span>{thisMonthBills.filter(b => b.status === 'unpaid').length} PENDING</span>
               </div>
+            </div>
+
+            {/* Budget Progress Card */}
+            <div className="p-6 bg-card border border-border rounded-3xl relative overflow-hidden group">
+              <div className="flex justify-between items-center mb-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted">Budget Usage</p>
+                <button 
+                  onClick={() => {
+                    const n = prompt("Enter new monthly budget:", budget.toString())
+                    if (n) updateBudget(parseFloat(n))
+                  }}
+                  className="text-[9px] font-black uppercase tracking-widest text-accent"
+                >
+                  Edit
+                </button>
+              </div>
+              <h3 className="text-2xl font-black text-foreground">${budget.toFixed(0)}</h3>
+              <div className="mt-4 space-y-2">
+                <div className="h-1.5 w-full bg-muted/10 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-1000 ${budgetProgress > 90 ? 'bg-red-500' : 'bg-accent'}`}
+                    style={{ width: `${budgetProgress}%` }}
+                  ></div>
+                </div>
+                <p className="text-[9px] font-black text-muted uppercase tracking-widest">
+                  {budgetProgress.toFixed(0)}% Utilized • ${remainingBudget.toFixed(0)} LEFT
+                </p>
+              </div>
+            </div>
+
+            {/* Prediction Card */}
+            <div className="p-6 bg-card border border-border rounded-3xl relative overflow-hidden group border-dashed border-accent/20">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted flex items-center gap-2">
+                <RefreshCw size={10} className="text-accent animate-spin-slow" />
+                Next Month Estimate
+              </p>
+              <h3 className="text-2xl font-black text-foreground">${predictedNextMonth.toFixed(2)}</h3>
+              <p className="mt-4 text-[9px] font-black text-muted uppercase tracking-widest">
+                Based on {bills.filter(b => b.is_recurring).length} recurring bills
+              </p>
             </div>
           </div>
         </section>

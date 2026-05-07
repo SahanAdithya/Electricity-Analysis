@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { supabase } from '@/utils/supabase'
-import { Plus, CreditCard, Calendar, Tag, LayoutGrid, RefreshCw } from 'lucide-react'
+import { Plus, CreditCard, Calendar, Tag, LayoutGrid, RefreshCw, AlertTriangle, Trash2 } from 'lucide-react'
 
 const CATEGORIES = ['Rent', 'Utilities', 'Subscriptions', 'Food', 'Transport', 'Other']
 
@@ -11,7 +11,12 @@ interface Roommate {
   amount: string
 }
 
-export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
+interface AddBillProps {
+  onBillAdded: () => void
+  remainingBudget: number
+}
+
+export default function AddBill({ onBillAdded, remainingBudget }: AddBillProps) {
   const { user } = useUser()
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
@@ -21,6 +26,8 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
   const [isSplit, setIsSplit] = useState(false)
   const [roommates, setRoommates] = useState<Roommate[]>([{ name: '', amount: '' }])
   const [loading, setLoading] = useState(false)
+
+  const isOverBudget = parseFloat(amount) > remainingBudget
 
   const handleAddRoommate = () => setRoommates([...roommates, { name: '', amount: '' }])
   const handleRemoveRoommate = (index: number) => setRoommates(roommates.filter((_, i) => i !== index))
@@ -94,6 +101,15 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
           </div>
           <h2 className="text-xl font-bold text-foreground">Add New Bill</h2>
         </div>
+
+        {isOverBudget && (
+          <div className="flex items-center gap-3 px-4 py-2 bg-orange-500/10 border border-orange-500/20 rounded-xl animate-in fade-in slide-in-from-right-4">
+            <AlertTriangle size={14} className="text-orange-500" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">
+              Warning: Exceeds Remaining Budget (${remainingBudget.toFixed(0)})
+            </p>
+          </div>
+        )}
         
         <div className="flex flex-wrap gap-4">
           <label className="flex items-center gap-2 cursor-pointer group">
