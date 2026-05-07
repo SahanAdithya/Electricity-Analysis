@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { supabase } from '@/utils/supabase'
-import { Plus, CreditCard, Calendar, Tag, LayoutGrid } from 'lucide-react'
+import { Plus, CreditCard, Calendar, Tag, LayoutGrid, RefreshCw } from 'lucide-react'
 
 const CATEGORIES = ['Rent', 'Utilities', 'Subscriptions', 'Food', 'Transport', 'Other']
 
@@ -12,6 +12,7 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
   const [amount, setAmount] = useState('')
   const [date, setDate] = useState('')
   const [category, setCategory] = useState('Other')
+  const [isRecurring, setIsRecurring] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,6 +26,7 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
       amount: parseFloat(amount),
       due_date: date,
       category,
+      is_recurring: isRecurring,
       status: 'unpaid'
     })
 
@@ -38,17 +40,36 @@ export default function AddBill({ onBillAdded }: { onBillAdded: () => void }) {
       setAmount('')
       setDate('')
       setCategory('Other')
+      setIsRecurring(false)
       onBillAdded()
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="p-8 bg-white rounded-2xl shadow-sm border border-gray-100 space-y-6 transition-all hover:shadow-md">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="p-2 bg-black text-white rounded-lg">
-          <Plus size={20} />
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-black text-white rounded-lg">
+            <Plus size={20} />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900">Add New Bill</h2>
         </div>
-        <h2 className="text-xl font-bold text-gray-900">Add New Bill</h2>
+        
+        <label className="flex items-center gap-2 cursor-pointer group">
+          <div className="relative">
+            <input 
+              type="checkbox" 
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-10 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+          </div>
+          <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors flex items-center gap-1.5">
+            <RefreshCw size={12} className={isRecurring ? 'animate-spin-slow' : ''} />
+            Monthly Recurring
+          </span>
+        </label>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
