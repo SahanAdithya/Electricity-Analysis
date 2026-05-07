@@ -9,6 +9,7 @@ import CategoryBreakdown from "@/app/components/CategoryBreakdown"
 import BillCalendar from "@/app/components/BillCalendar"
 import BillShares from "@/app/components/BillShares"
 import ThemeToggle from "@/app/components/ThemeToggle"
+import ElectricityDashboard from "@/app/components/ElectricityDashboard"
 import { Trash2, Edit2, CheckCircle, Clock, Wallet, TrendingUp, PieChart as PieIcon, ArrowUpRight, CreditCard, Bell, AlertCircle, Calendar, RefreshCw, FileText, Download } from 'lucide-react'
 import { isBefore, startOfToday, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
 import jsPDF from 'jspdf'
@@ -279,7 +280,7 @@ export default function Home() {
             <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
               <div className="w-4 h-4 border-2 border-background rounded-sm rotate-45"></div>
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground">Bill tracker</h1>
+            <h1 className="text-xl font-bold tracking-tight text-foreground">Electricity Analyst</h1>
           </div>
           <div className="flex items-center gap-4">
             <button 
@@ -296,13 +297,27 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
+      <div className="max-w-7xl mx-auto px-6 py-12 space-y-20">
+        {/* Main Hero: Electricity Analytics */}
+        <section>
+          <div className="mb-10">
+            <h2 className="text-4xl font-black mb-2 tracking-tight text-foreground">Electricity Analysis</h2>
+            <p className="text-sm font-bold text-muted uppercase tracking-widest">Core Project Feature</p>
+          </div>
+          <ElectricityDashboard bills={bills} />
+        </section>
 
-        {/* Header Section */}
-        <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <h2 className="text-4xl font-black mb-2 tracking-tight text-foreground">Financial Overview</h2>
-            <div className="flex items-center gap-3 mt-4">
+        <hr className="border-border opacity-50" />
+
+        {/* Bill Management & Supporting Features */}
+        <section className="space-y-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <h2 className="text-3xl font-black tracking-tight text-foreground">Bill Management</h2>
+              <p className="text-xs font-bold text-muted uppercase tracking-widest mt-1">Supporting Features: Splitting, Reports, & Budgeting</p>
+            </div>
+            
+            <div className="flex items-center gap-3">
               <button 
                 onClick={exportToPDF}
                 className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/10 transition-all shadow-sm text-foreground"

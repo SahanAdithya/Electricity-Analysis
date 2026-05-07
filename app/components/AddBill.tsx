@@ -4,7 +4,7 @@ import { useUser } from '@clerk/nextjs'
 import { supabase } from '@/utils/supabase'
 import { Plus, CreditCard, Calendar, Tag, LayoutGrid, RefreshCw, AlertTriangle, Trash2 } from 'lucide-react'
 
-const CATEGORIES = ['Rent', 'Utilities', 'Subscriptions', 'Food', 'Transport', 'Other']
+const CATEGORIES = ['Electricity', 'Rent', 'Utilities', 'Subscriptions', 'Food', 'Transport', 'Other']
 
 interface Roommate {
   name: string
@@ -22,6 +22,7 @@ export default function AddBill({ onBillAdded, remainingBudget }: AddBillProps) 
   const [amount, setAmount] = useState('')
   const [date, setDate] = useState('')
   const [category, setCategory] = useState('Other')
+  const [unitsConsumed, setUnitsConsumed] = useState('')
   const [isRecurring, setIsRecurring] = useState(false)
   const [isSplit, setIsSplit] = useState(false)
   const [roommates, setRoommates] = useState<Roommate[]>([{ name: '', amount: '' }])
@@ -51,6 +52,7 @@ export default function AddBill({ onBillAdded, remainingBudget }: AddBillProps) 
         amount: parseFloat(amount),
         due_date: date,
         category,
+        units_consumed: category === 'Electricity' ? parseFloat(unitsConsumed) : null,
         is_recurring: isRecurring,
         status: 'unpaid'
       })
@@ -193,6 +195,19 @@ export default function AddBill({ onBillAdded, remainingBudget }: AddBillProps) 
             className="w-full border-border border p-3 rounded-xl text-foreground focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none bg-background/50"
           />
         </div>
+
+        {category === 'Electricity' && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-left-4">
+            <label className="text-xs font-semibold text-muted uppercase tracking-wider flex items-center gap-2">
+              <RefreshCw size={12} className="text-accent" /> Units (kWh)
+            </label>
+            <input 
+              type="number" step="0.1" placeholder="e.g. 450.5" value={unitsConsumed} required
+              onChange={(e) => setUnitsConsumed(e.target.value)}
+              className="w-full border-border border p-3 rounded-xl text-foreground focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none bg-background/50"
+            />
+          </div>
+        )}
       </div>
 
       {isSplit && (
