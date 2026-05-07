@@ -159,10 +159,10 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] rounded-full -z-10"></div>
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-green-500">
               Environmental Stewardship
             </div>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">Your data can <span className="text-emerald-500">save the world.</span></h2>
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">Your data can <span className="text-green-500">save the world.</span></h2>
             <p className="text-zinc-300 text-lg leading-relaxed font-medium">
               Every kWh you save is a step toward a cooler planet. We transform complex energy metrics into actionable environmental insights.
             </p>
@@ -173,7 +173,7 @@ export default function LandingPage() {
                 { icon: <Zap size={16}/>, text: "Identify peak-hour pollution peaks in your area" }
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-sm font-bold text-zinc-400">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+                  <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-500">
                     {item.icon}
                   </div>
                   {item.text}
@@ -182,14 +182,14 @@ export default function LandingPage() {
             </ul>
           </div>
           <div className="relative">
-             <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-[40px] p-12 aspect-square flex flex-col items-center justify-center text-center gap-6 overflow-hidden group hover:bg-emerald-500/20 transition-all">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="w-32 h-32 bg-emerald-500 rounded-full flex items-center justify-center text-black shadow-2xl shadow-emerald-500/40 relative z-10">
+             <div className="bg-green-500/10 border border-green-500/20 rounded-[40px] p-12 aspect-square flex flex-col items-center justify-center text-center gap-6 overflow-hidden group hover:bg-green-500/20 transition-all">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center text-black shadow-2xl shadow-green-500/40 relative z-10">
                    <Leaf size={64} className="fill-current animate-pulse" />
                 </div>
                 <div className="relative z-10">
                    <div className="text-5xl font-black text-white mb-2">85%</div>
-                   <div className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Eco-Score Potential</div>
+                   <div className="text-[10px] font-black uppercase tracking-widest text-green-500">Eco-Score Potential</div>
                 </div>
              </div>
           </div>
@@ -198,29 +198,51 @@ export default function LandingPage() {
 
       {/* Security Section */}
       <section id="security" className="py-40 relative border-t border-white/5 bg-[#030303]">
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full -z-10"></div>
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-green-500/5 blur-[120px] rounded-full -z-10"></div>
         <div className="max-w-7xl mx-auto px-6 text-center space-y-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-blue-500">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-green-500">
              Fort Knox Data Security
           </div>
-          <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white mx-auto max-w-4xl">Your privacy is our <span className="text-blue-500">absolute priority.</span></h2>
+          <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white mx-auto max-w-4xl">Your privacy is our <span className="text-green-500">absolute priority.</span></h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
-             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-blue-500/30 transition-all">
-                <Shield className="text-blue-500 mb-6" size={32} />
+             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec">
+                <Shield className="text-green-500 mb-6 group-hover/sec:scale-110 transition-transform" size={32} />
                 <h4 className="text-xl font-black text-white mb-4 uppercase">Encrypted Storage</h4>
                 <p className="text-zinc-400 text-sm font-medium">Your bill data is stored in AES-256 encrypted vaults, isolated at the database level.</p>
              </div>
-             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-blue-500/30 transition-all">
-                <Activity className="text-blue-500 mb-6" size={32} />
+             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec">
+                <Activity className="text-green-500 mb-6 group-hover/sec:scale-110 transition-transform" size={32} />
                 <h4 className="text-xl font-black text-white mb-4 uppercase">Secure Auth</h4>
                 <p className="text-zinc-400 text-sm font-medium">Multi-factor authentication powered by industry-leading identity protocols.</p>
              </div>
-             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-blue-500/30 transition-all">
-                <Globe className="text-blue-500 mb-6" size={32} />
+             <div className="p-10 rounded-[40px] border border-white/5 bg-zinc-900/30 hover:border-green-500/30 transition-all group/sec">
+                <Globe className="text-green-500 mb-6 group-hover/sec:scale-110 transition-transform" size={32} />
                 <h4 className="text-xl font-black text-white mb-4 uppercase">Zero Sharing</h4>
                 <p className="text-zinc-400 text-sm font-medium">We never sell or share your energy usage patterns with 3rd party providers.</p>
              </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof / Stats */}
+      <section className="py-32 bg-zinc-900/50 border-y border-white/10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+          <div>
+            <h4 className="text-5xl font-black mb-2 text-green-500 tracking-tighter">15%</h4>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">Avg. Bill Reduction</p>
+          </div>
+          <div>
+            <h4 className="text-5xl font-black mb-2 tracking-tighter text-white">2.4k</h4>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">Active Analysts</p>
+          </div>
+          <div>
+            <h4 className="text-5xl font-black mb-2 text-green-500 tracking-tighter">800t</h4>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">CO2 Offset Yearly</p>
+          </div>
+          <div>
+            <h4 className="text-5xl font-black mb-2 tracking-tighter text-white">A+</h4>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">Efficiency Rating</p>
           </div>
         </div>
       </section>
