@@ -1,6 +1,6 @@
 'use client'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
-import { Zap, TrendingDown, TrendingUp, DollarSign, Activity, Leaf, TreePine, Globe } from 'lucide-react'
+import { Zap, TrendingDown, TrendingUp, DollarSign, Activity, Leaf, TreePine, Globe, Target, Trophy } from 'lucide-react'
 import { format, parseISO, startOfMonth, subMonths, isSameMonth } from 'date-fns'
 
 interface Bill {
@@ -13,7 +13,15 @@ interface Bill {
   units_consumed?: number
 }
 
-export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
+export default function ElectricityDashboard({ 
+  bills, 
+  reductionGoal = 10, 
+  onGoalUpdate 
+}: { 
+  bills: Bill[], 
+  reductionGoal?: number,
+  onGoalUpdate?: (goal: number) => void 
+}) {
   const electricityBills = bills
     .filter(b => b.category === 'Electricity')
     .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
@@ -67,10 +75,15 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
   const latestEmissions = latestKwh * co2Factor
   const treesNeeded = latestEmissions / 1.75 // Average tree absorbs 1.75kg CO2/month
 
+  const previousKwh = previousBill?.units_consumed || 0
+  const targetKwh = previousKwh * (1 - reductionGoal / 100)
+  const isOnTrack = latestKwh <= targetKwh
+  const goalProgress = previousKwh > 0 ? (latestKwh / previousKwh) * 100 : 0
+
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       {/* Hero Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
         <div className="md:col-span-2 p-8 bg-accent text-background rounded-[40px] shadow-2xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
             <Zap size={120} />
@@ -93,24 +106,66 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
         </div>
 
         {/* Planet Impact Card */}
-        <div className="p-8 bg-green-500 text-white rounded-[40px] shadow-2xl relative overflow-hidden group">
+        <div className="md:col-span-1 p-8 bg-green-500 text-white rounded-[40px] shadow-2xl relative overflow-hidden group">
           <div className="absolute -bottom-4 -right-4 opacity-10 group-hover:scale-110 transition-transform">
-            <Leaf size={100} />
+            <Leaf size={80} />
           </div>
           <div className="relative z-10 flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Globe size={16} className="opacity-70" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">Planet Impact</span>
+                <Globe size={14} className="opacity-70" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70 text-white">Planet Impact</span>
               </div>
-              <h3 className="text-3xl font-black tracking-tighter">
-                {latestEmissions.toFixed(1)} <span className="text-sm font-bold opacity-70">kg CO₂</span>
+              <h3 className="text-3xl font-black tracking-tighter whitespace-nowrap">
+                {latestEmissions.toFixed(0)} <span className="text-xs font-bold opacity-70">kg</span>
               </h3>
             </div>
-            <div className="mt-4 flex items-center gap-2 bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
-              <TreePine size={18} />
-              <p className="text-[10px] font-bold uppercase tracking-wider leading-tight">
-                Requires {Math.ceil(treesNeeded)} trees to offset this month
+            <div className="mt-6 flex items-center gap-2 bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+              <TreePine size={14} />
+              <p className="text-[8px] font-black uppercase tracking-wider leading-tight">
+                {Math.ceil(treesNeeded)} TREES OFFSET
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Savings Goal Card */}
+        <div className={`p-8 rounded-[40px] shadow-2xl relative overflow-hidden group border transition-all ${
+          isOnTrack ? 'bg-card border-green-500/50' : 'bg-card border-orange-500/50'
+        }`}>
+          <div className="relative z-10 flex flex-col justify-between h-full">
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-2">
+                  <Target size={14} className={isOnTrack ? 'text-green-500' : 'text-orange-500'} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted">Goal: -{reductionGoal}%</span>
+                </div>
+                {onGoalUpdate && (
+                  <button 
+                    onClick={() => {
+                      const n = prompt("Set energy reduction goal (%):", reductionGoal.toString())
+                      if (n) onGoalUpdate(parseFloat(n))
+                    }}
+                    className="text-[9px] font-black uppercase tracking-widest text-accent"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+              <h3 className="text-3xl font-black text-foreground tracking-tighter">
+                {isOnTrack ? 'On Track' : 'Off Track'}
+              </h3>
+            </div>
+            <div className="mt-6 space-y-2">
+              <div className="h-1.5 w-full bg-muted/10 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-1000 ${isOnTrack ? 'bg-green-500' : 'bg-orange-500'}`}
+                  style={{ width: `${Math.min(100, goalProgress)}%` }}
+                ></div>
+              </div>
+              <p className="text-[9px] font-black text-muted uppercase tracking-widest flex justify-between">
+                <span>{latestKwh.toFixed(0)} kWh</span>
+                <span>Target: {targetKwh.toFixed(0)}</span>
               </p>
             </div>
           </div>
@@ -122,14 +177,14 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
               <DollarSign size={16} />
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Avg. Unit Cost</span>
             </div>
-            <h3 className="text-4xl font-black text-foreground">
+            <h3 className="text-3xl font-black text-foreground tracking-tighter">
               ${latestBill && latestBill.units_consumed ? (latestBill.amount / latestBill.units_consumed).toFixed(2) : '0.00'}
             </h3>
-            <p className="text-[10px] font-black text-muted uppercase tracking-widest mt-2">Per kWh</p>
+            <p className="text-[9px] font-black text-muted uppercase tracking-widest mt-1">Per kWh</p>
           </div>
-          <div className={`mt-6 flex items-center gap-2 text-xs font-bold ${trendPercent > 0 ? 'text-red-500' : 'text-green-500'}`}>
+          <div className={`mt-4 flex items-center gap-2 text-xs font-bold ${trendPercent > 0 ? 'text-red-500' : 'text-green-500'}`}>
             {trendPercent > 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-            <span>{Math.abs(trendPercent).toFixed(1)}% trend</span>
+            <span>{Math.abs(trendPercent).toFixed(0)}% trend</span>
           </div>
         </div>
 
@@ -137,12 +192,12 @@ export default function ElectricityDashboard({ bills }: { bills: Bill[] }) {
           <div>
             <div className="flex items-center gap-2 mb-4 text-muted">
               <Activity size={16} />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Efficiency Score</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Efficiency</span>
             </div>
-            <h3 className="text-4xl font-black text-foreground">
+            <h3 className="text-3xl font-black text-foreground tracking-tighter">
               {trendPercent < 0 ? 'A+' : trendPercent < 5 ? 'B' : 'C'}
             </h3>
-            <p className="text-[10px] font-black text-muted uppercase tracking-widest mt-2">Based on usage trends</p>
+            <p className="text-[9px] font-black text-muted uppercase tracking-widest mt-1">Grade</p>
           </div>
           <div className="mt-6 h-1.5 w-full bg-muted/10 rounded-full overflow-hidden">
             <div 

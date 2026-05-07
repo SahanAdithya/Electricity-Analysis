@@ -26,6 +26,7 @@ export default function Home() {
   const { user } = useUser()
   const [bills, setBills] = useState<Bill[]>([])
   const [loading, setLoading] = useState(true)
+  const [reductionGoal, setReductionGoal] = useState<number>(10)
 
   const fetchBills = useCallback(async () => {
     if (!user) return
@@ -40,9 +41,29 @@ export default function Home() {
     setLoading(false)
   }, [user])
 
+  const fetchSettings = useCallback(async () => {
+    if (!user) return
+    const { data, error } = await supabase
+      .from('user_settings')
+      .select('energy_reduction_goal')
+      .eq('user_id', user.id)
+      .single()
+
+    if (!error && data) {
+      setReductionGoal(data.energy_reduction_goal || 10)
+    }
+  }, [user])
+
   useEffect(() => {
     fetchBills()
-  }, [fetchBills])
+    fetchSettings()
+  }, [fetchBills, fetchSettings])
+
+  const updateReductionGoal = async (newGoal: number) => {
+    if (!user) return
+    setReductionGoal(newGoal)
+    await supabase.from('user_settings').update({ energy_reduction_goal: newGoal }).eq('user_id', user.id)
+  }
 
   const handleDeleteReading = async (id: string) => {
     if (!confirm("Delete this reading?")) return
@@ -126,7 +147,11 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <ElectricityDashboard bills={bills} />
+          <ElectricityDashboard 
+            bills={bills} 
+            reductionGoal={reductionGoal}
+            onGoalUpdate={updateReductionGoal}
+          />
         </section>
 
         <hr className="border-border opacity-50" />
