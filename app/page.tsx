@@ -297,7 +297,6 @@ export default function Home() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
-        <AddBill remainingBudget={remainingBudget} onBillAdded={() => {}} />
 
         {/* Header Section */}
         <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -395,7 +394,7 @@ export default function Home() {
 
         {/* Add Bill Form */}
         <section>
-          <AddBill onBillAdded={fetchBills} />
+          <AddBill remainingBudget={remainingBudget} onBillAdded={fetchBills} />
         </section>
 
         {/* Bill List / Calendar View */}
