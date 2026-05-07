@@ -7,6 +7,7 @@ import EditBillModal from "@/app/components/EditBillModal"
 import SpendingChart from "@/app/components/SpendingChart"
 import CategoryBreakdown from "@/app/components/CategoryBreakdown"
 import BillCalendar from "@/app/components/BillCalendar"
+import BillShares from "@/app/components/BillShares"
 import { Trash2, Edit2, CheckCircle, Clock, Wallet, TrendingUp, PieChart as PieIcon, ArrowUpRight, CreditCard, Bell, AlertCircle, Calendar, RefreshCw } from 'lucide-react'
 import { isBefore, startOfToday, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
 
@@ -312,6 +313,8 @@ export default function Home() {
                           </button>
                         </div>
                       </div>
+
+                      <BillShares billId={bill.id} />
 
                       <div className="mt-8 flex justify-between items-end">
                         <div>
